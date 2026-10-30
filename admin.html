@@ -1,0 +1,188 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>RSVPs · Julia &amp; Aidan</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=Cormorant+SC:wght@500;600&display=swap" rel="stylesheet">
+<style>
+  :root { --navy: #2D3A52; --ink: #3A4558; --salt: #F7F5EF; --rule: #CBD3DC; --soft: #5E6B80; --yes: #3E6B4F; --no: #8E3B3B; --wait: #9A8257; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--salt); color: var(--ink); font: 400 17px/1.45 "Cormorant Garamond", Georgia, serif; }
+  header { background: #fff; border-bottom: 1px solid var(--rule); padding: 18px 24px; display: flex; align-items: center; gap: 16px; flex-wrap: wrap; }
+  h1 { font: 600 22px/1 "Cormorant SC", serif; letter-spacing: .16em; margin: 0; color: var(--navy); }
+  header .sp { flex: 1; }
+  main { max-width: 1180px; margin: 0 auto; padding: 24px; }
+  button, .btn { font: 600 13px/1 "Cormorant SC", serif; letter-spacing: .14em; color: var(--navy); background: #fff; border: 1px solid var(--navy); padding: 9px 14px; cursor: pointer; }
+  button.dark { background: var(--navy); color: #fff; }
+  button.link { border: 0; background: none; padding: 2px 4px; text-decoration: underline; letter-spacing: .06em; }
+  input[type=text], input[type=password] { font: 400 17px/1.3 "Cormorant Garamond", serif; color: var(--navy); border: 1px solid var(--rule); background: #fff; padding: 8px 10px; }
+  .login { max-width: 380px; margin: 14vh auto; background: #fff; border: 1px solid var(--rule); padding: 36px; text-align: center; }
+  .login input { width: 100%; margin: 16px 0; }
+  .stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 14px; margin-bottom: 26px; }
+  .stat { background: #fff; border: 1px solid var(--rule); padding: 16px 18px; }
+  .stat b { display: block; font: 600 32px/1 "Cormorant SC", serif; color: var(--navy); }
+  .stat span { font: 500 13px/1.2 "Cormorant SC", serif; letter-spacing: .14em; color: var(--soft); }
+  .tabs { display: flex; gap: 8px; margin: 0 0 16px; flex-wrap: wrap; }
+  .tabs button.on { background: var(--navy); color: #fff; }
+  .tools { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; margin-bottom: 12px; }
+  .tools input { flex: 1; min-width: 200px; }
+  table { width: 100%; border-collapse: collapse; background: #fff; border: 1px solid var(--rule); }
+  th, td { text-align: left; padding: 9px 12px; border-bottom: 1px solid var(--rule); vertical-align: top; }
+  th { font: 600 13px/1.2 "Cormorant SC", serif; letter-spacing: .12em; color: var(--soft); background: #FBFAF7; position: sticky; top: 0; }
+  tr.hh td { background: #FBFAF7; font-weight: 600; color: var(--navy); }
+  .pill { font: 600 12px/1 "Cormorant SC", serif; letter-spacing: .1em; padding: 4px 8px; border: 1px solid; white-space: nowrap; }
+  .yes { color: var(--yes); } .no { color: var(--no); } .wait { color: var(--wait); }
+  .fix { color: var(--no); font-style: italic; font-weight: 400; }
+  .gb { background: #fff; border: 1px solid var(--rule); padding: 14px 16px; margin: 0 0 12px; }
+  .gb p { margin: 0 0 6px; }
+  .gb small { color: var(--soft); }
+  .note { color: var(--soft); font-style: italic; font-size: 15px; }
+  .scroll { overflow-x: auto; }
+  dialog { border: 1px solid var(--navy); padding: 24px; max-width: 420px; width: 92vw; }
+  dialog label { display: block; margin: 10px 0 4px; font-weight: 600; }
+  dialog input[type=text] { width: 100%; }
+</style>
+</head>
+<body>
+<div id="app"></div>
+
+<script>
+const SB_URL = 'https://afkjchshoktlmqrpopyk.supabase.co';
+const SB_KEY = 'sb_publishable_-prKRSiYudfdwYxC1o4Rbw_PZlcJt89';
+const KEY_STORE = 'westleys-admin';
+const app = document.getElementById('app');
+const esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+let KEY = ''; try { KEY = localStorage.getItem(KEY_STORE) || ''; } catch (e) {}
+let D = null, tab = 'guests', filter = '';
+
+async function rpc(fn, body) {
+  const r = await fetch(`${SB_URL}/rest/v1/rpc/${fn}`, { method: 'POST',
+    headers: { apikey: SB_KEY, Authorization: `Bearer ${SB_KEY}`, 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
+  if (!r.ok) throw new Error(await r.text());
+  const t = await r.text(); return t ? JSON.parse(t) : null;
+}
+
+function login(err) {
+  app.innerHTML = `<form class="login" id="lf"><h1>RSVPs</h1><p class="note">Julia &amp; Aidan · the-westleys.com</p>
+    <input type="password" id="k" placeholder="Admin key" autocomplete="current-password"><button class="dark" type="submit">Sign in</button>
+    <p class="note" style="color:#8E3B3B">${err ? 'That key didn\'t work.' : ''}</p></form>`;
+  document.getElementById('lf').onsubmit = async e => {
+    e.preventDefault(); KEY = document.getElementById('k').value.trim();
+    try { await load(); try { localStorage.setItem(KEY_STORE, KEY); } catch (e) {} } catch (e) { login(true); }
+  };
+}
+
+async function load() { D = await rpc('westley_admin_data', { p_key: KEY }); render(); }
+
+const status = v => v === true ? '<span class="pill yes">Yes</span>' : v === false ? '<span class="pill no">No</span>' : '<span class="pill wait">—</span>';
+const guestName = (g, h) => (g.first === 'Family' || g.first === 'Mrs.') ? `${h.label}` : `${g.first} ${g.last}`.trim();
+
+function stats() {
+  const gs = D.households.flatMap(h => h.guests || []);
+  const c = (k, v) => gs.filter(g => (g.rsvp || {})[k] === v).length;
+  const replied = new Set(D.households.filter(h => (h.guests || []).some(g => g.rsvp)).map(h => h.id)).size;
+  return `<div class="stats">
+    <div class="stat"><b>${gs.length}</b><span>Invited guests</span></div>
+    <div class="stat"><b class="yes">${c('wedding', true)}</b><span>Attending wedding</span></div>
+    <div class="stat"><b class="no">${c('wedding', false)}</b><span>Declined</span></div>
+    <div class="stat"><b>${gs.filter(g => !g.rsvp).length}</b><span>Not replied yet</span></div>
+    <div class="stat"><b>${c('welcome', true)}</b><span>Welcome party</span></div>
+    <div class="stat"><b>${replied} / ${D.households.length}</b><span>Invitations answered</span></div>
+  </div>`;
+}
+
+function guestsTab() {
+  const f = filter.toLowerCase();
+  const rows = D.households.filter(h => !f || h.label.toLowerCase().includes(f) || (h.guests || []).some(g => guestName(g, h).toLowerCase().includes(f)))
+    .map(h => `<tr class="hh"><td colspan="6">${esc(h.label)} ${h.needs_fix ? '<span class="fix">· needs individual names</span>' : ''}
+        ${(h.notes || []).map(n => `<div class="note">“${esc(n.note)}” ${n.email ? '· ' + esc(n.email) : ''}</div>`).join('')}</td>
+        <td><button class="link" data-add="${h.id}">+ guest</button></td></tr>` +
+      (h.guests || []).map(g => { const r = g.rsvp || {}; return `<tr>
+        <td>${esc(guestName(g, h))}${g.plus_one ? ' <span class="note">+1</span>' : ''}${r.plus_one_name ? `<div class="note">Guest: ${esc(r.plus_one_name)}</div>` : ''}</td>
+        <td>${status(r.wedding)}</td><td>${status(r.welcome)}</td><td>${esc(r.meal)}</td><td>${esc(r.dietary)}</td>
+        <td class="note">${r.updated_at ? new Date(r.updated_at).toLocaleDateString() : ''}</td>
+        <td><button class="link" data-edit="${g.id}">Edit</button></td></tr>`; }).join('')).join('');
+  return `<div class="tools"><input type="text" id="flt" placeholder="Search names" value="${esc(filter)}">
+      <button data-add="">+ New invitation</button><button id="csv">Download CSV</button></div>
+    <div class="scroll"><table><thead><tr><th>Guest</th><th>Wedding</th><th>Welcome</th><th>Meal</th><th>Dietary</th><th>Replied</th><th></th></tr></thead>
+    <tbody>${rows}</tbody></table></div>`;
+}
+
+function guestbookTab() {
+  const gb = D.guestbook || [];
+  if (!gb.length) return '<p class="note">No notes yet.</p>';
+  return gb.map(n => `<div class="gb"><p>${esc(n.message)}</p><small>${esc(n.name)} · ${new Date(n.created_at).toLocaleString()} · ${n.approved ? '<b class="yes">Showing on site</b>' : '<b class="wait">Waiting for approval</b>'}</small>
+    <div style="margin-top:8px">${n.approved ? `<button data-gb="hide" data-id="${n.id}">Hide</button>` : `<button class="dark" data-gb="approve" data-id="${n.id}">Show on site</button>`}
+    <button class="link" data-gb="delete" data-id="${n.id}">Delete</button></div></div>`).join('');
+}
+
+function render() {
+  const pending = (D.guestbook || []).filter(n => !n.approved).length;
+  app.innerHTML = `<header><h1>Julia &amp; Aidan · RSVPs</h1><span class="sp"></span>
+      <button id="refresh">Refresh</button><button class="link" id="out">Sign out</button></header>
+    <main>${stats()}
+      <div class="tabs"><button data-tab="guests" class="${tab === 'guests' ? 'on' : ''}">Guests</button>
+        <button data-tab="guestbook" class="${tab === 'guestbook' ? 'on' : ''}">Guestbook${pending ? ` (${pending} new)` : ''}</button></div>
+      ${tab === 'guests' ? guestsTab() : guestbookTab()}</main>
+    <dialog id="dlg"></dialog>`;
+}
+
+function findGuest(id) { for (const h of D.households) for (const g of (h.guests || [])) if (g.id === id) return [g, h]; return []; }
+
+app.addEventListener('input', e => { if (e.target.id === 'flt') { filter = e.target.value; const pos = e.target.selectionStart; render(); const f = document.getElementById('flt'); f.focus(); f.setSelectionRange(pos, pos); } });
+app.addEventListener('click', async e => {
+  const t = e.target;
+  if (t.dataset.tab) { tab = t.dataset.tab; render(); }
+  else if (t.id === 'refresh') load();
+  else if (t.id === 'out') { try { localStorage.removeItem(KEY_STORE); } catch (e) {} KEY = ''; login(); }
+  else if (t.dataset.gb) {
+    if (t.dataset.gb === 'delete' && !confirm('Delete this note for good?')) return;
+    await rpc('westley_admin_guestbook', { p_key: KEY, p_id: t.dataset.id, p_action: t.dataset.gb }); load();
+  }
+  else if (t.id === 'csv') csv();
+  else if ('edit' in t.dataset) editGuest(t.dataset.edit);
+  else if ('add' in t.dataset) addGuest(t.dataset.add || null);
+});
+
+function dialog(html, onSave) {
+  const d = document.getElementById('dlg');
+  d.innerHTML = `<form method="dialog" id="df">${html}<div style="margin-top:18px;display:flex;gap:10px;flex-wrap:wrap">
+    <button class="dark" value="save">Save</button><button value="cancel">Cancel</button><span id="dx"></span></div></form>`;
+  d.showModal();
+  d.querySelector('#df').onsubmit = async e => { if (e.submitter && e.submitter.value === 'save') { e.preventDefault(); await onSave(d); d.close(); load(); } };
+  return d;
+}
+function editGuest(id) {
+  const [g] = findGuest(id);
+  const d = dialog(`<h1 style="font-size:18px">Edit guest</h1>
+    <label>First name</label><input type="text" id="gf" value="${esc(g.first)}">
+    <label>Last name</label><input type="text" id="gl" value="${esc(g.last)}">
+    <label style="display:flex;gap:8px;align-items:center"><input type="checkbox" id="gp"${g.plus_one ? ' checked' : ''}> Gets a plus-one</label>`,
+    () => rpc('westley_admin_guest', { p_key: KEY, p_guest: id, p_first: document.getElementById('gf').value, p_last: document.getElementById('gl').value, p_plus_one: document.getElementById('gp').checked }));
+  d.querySelector('#dx').innerHTML = `<button type="button" class="link" id="rm" style="color:#8E3B3B">Remove guest</button>`;
+  d.querySelector('#rm').onclick = async () => { if (confirm('Remove this guest and their reply?')) { await rpc('westley_admin_remove_guest', { p_key: KEY, p_guest: id }); d.close(); load(); } };
+}
+function addGuest(hid) {
+  dialog(`<h1 style="font-size:18px">${hid ? 'Add a guest to this invitation' : 'New invitation'}</h1>
+    <label>First name</label><input type="text" id="af"><label>Last name</label><input type="text" id="al">`,
+    () => rpc('westley_admin_add_guest', { p_key: KEY, p_household: hid, p_first: document.getElementById('af').value, p_last: document.getElementById('al').value }));
+}
+function csv() {
+  const q = v => `"${String(v ?? '').replace(/"/g, '""')}"`;
+  const yn = v => v === true ? 'Yes' : v === false ? 'No' : '';
+  const lines = [['Invitation', 'Guest', 'Wedding', 'Welcome party', 'Meal', 'Dietary', 'Plus-one name', 'Replied'].map(q).join(',')];
+  D.households.forEach(h => (h.guests || []).forEach(g => { const r = g.rsvp || {};
+    lines.push([h.label, guestName(g, h), yn(r.wedding), yn(r.welcome), r.meal, r.dietary, r.plus_one_name, r.updated_at ? r.updated_at.slice(0, 10) : ''].map(q).join(',')); }));
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(new Blob([lines.join('\n')], { type: 'text/csv' }));
+  a.download = 'westley-rsvps.csv'; a.click();
+}
+
+KEY ? load().catch(() => login(true)) : login();
+</script>
+</body>
+</html>
