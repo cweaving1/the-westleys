@@ -54,7 +54,13 @@ button[aria-pressed="true"] .rv-badge{background:#fff;color:var(--navy)}
 <header>
 <h1>Julia &amp; Aidan <small>the-westleys.com · site review</small></h1>
 <nav aria-label="Page">
-<button type="button" data-page="Site">Website</button>
+<button type="button" data-page="Home">Home</button>
+<button type="button" data-page="Weekend">The Weekend</button>
+<button type="button" data-page="Travel">Travel &amp; Stay</button>
+<button type="button" data-page="RSVP">RSVP</button>
+<button type="button" data-page="Registry">Registry</button>
+<button type="button" data-page="FAQ">Good to Know</button>
+<button type="button" data-page="Guestbook">Guestbook</button>
 <button type="button" data-page="Portal">RSVP portal</button>
 </nav>
 <div class="seg" role="group" aria-label="Device">
@@ -96,10 +102,11 @@ button[aria-pressed="true"] .rv-badge{background:#fff;color:var(--navy)}
   try{ if(k){ localStorage.setItem(CODE_KEY,k); q.delete('k'); history.replaceState(null,'',location.pathname+(q.toString()?'?'+q:'')+location.hash); } window.__rvHasKey=!!localStorage.getItem(CODE_KEY); }catch(e){ window.__rvHasKey=false; }
 })();
 (function(){
-  var NAMES={Site:'Website',Portal:'RSVP portal'};
-  var SRC={Site:'index.html?review=1',Portal:'admin.html'};
+  var NAMES={Home:'Home',Weekend:'The Weekend',Travel:'Travel & Stay',RSVP:'RSVP',Registry:'Registry',FAQ:'Good to Know',Guestbook:'Guestbook',Portal:'RSVP portal'};
+  var SRC={Home:'index.html?review=1#home',Weekend:'index.html?review=1#weekend',Travel:'index.html?review=1#travel',RSVP:'index.html?review=1#rsvp',
+    Registry:'index.html?review=1#registry',FAQ:'index.html?review=1#faq',Guestbook:'index.html?review=1#guestbook',Portal:'admin.html'};
   var frame=document.getElementById('frame'), ifr=document.getElementById('view'), note=document.getElementById('note');
-  var page='Site', view=innerWidth<760?'phone':'desktop';
+  var page='Home', view=innerWidth<760?'phone':'desktop';
   function fromHash(){var h=location.hash.replace('#','');if(NAMES[h])page=h;}
   function fit(){
     if(view!=='desktop')return;
