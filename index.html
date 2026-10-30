@@ -438,7 +438,10 @@ function enter(animate) {
   if (animate) swim();
   loadGuestbook();
 }
-if (PASS.toLowerCase() === 'chowdah') enter(true);
+// review.html shows the site in a frame: skip the gate and the fish so comment pins land on the page itself
+const REVIEW = new URLSearchParams(location.search).has('review');
+if (REVIEW) PASS = 'chowdah';
+if (PASS.toLowerCase() === 'chowdah') enter(!REVIEW);
 document.getElementById('gateForm').addEventListener('submit', e => {
   e.preventDefault();
   const v = document.getElementById('pw').value.trim();
