@@ -1,5 +1,5 @@
-/* Review comments, shared with The MOHI review boards (same Supabase functions, board "westleys"). Comments live in Supabase (public.mohi_review_comments),
-   read and written only through the mohi_review_* functions, which check the board's review key.
+/* Review comments for the wedding site. Adapted from The MOHI review boards, but with its own storage: comments live in Supabase
+   (public.westleys_review_comments), read and written only through the westleys_review_* functions, which check the review key.
    window.MOHI_REVIEW = {board, key?, mode: 'pins' | 'sections', sections?: {id: label}}
    pins:     templates board shell. Pins sit on the page inside the iframe; the list sits in a side panel.
    sections: brand guidelines. A "Comments & suggested edits" block at the end of each section. */
@@ -15,7 +15,7 @@
     return null;
   }
   function rpc(fn, args) {
-    args.p_board = CFG.board; args.p_key = key;
+    args.p_key = key;
     return fetch(API + fn, { method: 'POST', headers: { apikey: APIKEY, 'Content-Type': 'application/json' }, body: JSON.stringify(args) })
       .then(function (r) { return r.json().then(function (j) { if (!r.ok) throw new Error(j.message || ('Error ' + r.status)); return j; }); });
   }
@@ -25,7 +25,7 @@
   function tops(filter) { return all.filter(function (c) { return !c.parent_id && filter(c); }); }
   function replies(c) { return all.filter(function (r) { return r.parent_id === c.id; }); }
   function setName(n) { me = n.trim(); store(NAME_KEY, me); document.querySelectorAll('[data-rv-me]').forEach(function (x) { x.textContent = me || 'not set'; }); }
-  function load() { if (!key) return Promise.resolve(); return rpc('mohi_review_list', {}).then(function (rows) { all = rows; draw(); }); }
+  function load() { if (!key) return Promise.resolve(); return rpc('westleys_review_list', {}).then(function (rows) { all = rows; draw(); }); }
 
   var CSS = '.rv-item{border-top:1px solid #CBD3DC;padding:14px 0;font-family:"Cormorant Garamond",Georgia,serif;font-size:17px;line-height:1.45;color:#3A4558}' +
     '.rv-item.rv-res{border-left:3px solid #CBD3DC;padding-left:12px}.rv-item.rv-hl{background:#EEF1F5;box-shadow:0 0 0 8px #EEF1F5}' +
@@ -70,9 +70,9 @@
       if (b.dataset.rvResolve) {
         if (!me) { var n = prompt('Your name, so others can see who resolved this:'); if (!n || !n.trim()) return; setName(n); }
         var c = all.filter(function (x) { return x.id === b.dataset.rvResolve; })[0];
-        rpc('mohi_review_resolve', { p_id: c.id, p_resolved: !c.resolved, p_author: me }).then(load).catch(alert);
+        rpc('westleys_review_resolve', { p_id: c.id, p_resolved: !c.resolved, p_author: me }).then(load).catch(alert);
       } else if (b.dataset.rvDel) {
-        if (confirm('Delete this comment? Replies to it are deleted too.')) rpc('mohi_review_delete', { p_id: b.dataset.rvDel, p_author: me }).then(load).catch(alert);
+        if (confirm('Delete this comment? Replies to it are deleted too.')) rpc('westleys_review_delete', { p_id: b.dataset.rvDel, p_author: me }).then(load).catch(alert);
       } else if (b.dataset.rvReply) {
         var box = root.querySelector('[data-rv-replybox="' + b.dataset.rvReply + '"]');
         if (box.firstChild) { box.innerHTML = ''; return; }
@@ -82,7 +82,7 @@
         f.querySelector('[data-rv-cancel]').onclick = function () { box.innerHTML = ''; };
         f.onsubmit = function (ev) {
           ev.preventDefault(); setName(f.author.value);
-          rpc('mohi_review_add', { p_page: parent.page, p_section: parent.section, p_kind: 'reply', p_parent: parent.id, p_author: me, p_body: f.body.value })
+          rpc('westleys_review_add', { p_page: parent.page, p_section: parent.section, p_kind: 'reply', p_parent: parent.id, p_author: me, p_body: f.body.value })
             .then(load).catch(function (er) { f.querySelector('.rv-err').textContent = er.message; });
         };
         f.querySelector(me ? 'textarea' : 'input').focus();
@@ -128,7 +128,7 @@
         var sr = b.querySelector('[data-rv-showres]'); if (sr) sr.onclick = function () { showResolved = true; draw(); };
         f.onsubmit = function (ev) {
           ev.preventDefault(); setName(f.author.value);
-          rpc('mohi_review_add', { p_page: 'Brand', p_section: id, p_kind: f.kind.value, p_author: me, p_body: f.body.value })
+          rpc('westleys_review_add', { p_page: 'Brand', p_section: id, p_kind: f.kind.value, p_author: me, p_body: f.body.value })
             .then(function () { f.body.value = ''; return load(); }).catch(function (er) { f.querySelector('.rv-err').textContent = er.message; });
         };
       });
@@ -231,7 +231,7 @@
     ev.preventDefault(); var f = ev.target; setName(f.author.value);
     var a = { p_page: S().page, p_author: me, p_body: f.body.value, p_kind: 'comment' };
     if (pending && pending.x != null) { a.p_view = S().view; a.p_x = pending.x; a.p_y = pending.y; }
-    rpc('mohi_review_add', a).then(function (row) { dlg.close(); return load().then(function () { openPanel(row.id); }); })
+    rpc('westleys_review_add', a).then(function (row) { dlg.close(); return load().then(function () { openPanel(row.id); }); })
       .catch(function (er) { dlg.querySelector('.rv-err').textContent = er.message; });
   };
 

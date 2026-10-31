@@ -23,4 +23,4 @@ Everything lives in Supabase (project `afkjchshoktlmqrpopyk`). The pages call `w
 Aidan's the-westleys.com (Cloudflare) points at GitHub Pages. See the DNS notes Christa sends.
 
 ## Review comments
-`review.html` shows the site (desktop / phone) with pinned comments, the same system as The MOHI review boards: `review.js` calls the `mohi_review_*` functions with board `westleys`. Open it from the private link (`review.html?k=…`). The key is saved on the device and removed from the address bar, so it never lives in this repo.
+`review.html` shows the site (desktop / phone) with pinned comments. `review.js` calls the `westleys_review_*` functions; comments live in `westleys_review_comments` (separate from The MOHI's review tables). Open it from the private link (`review.html?k=…`). The key is saved on the device and removed from the address bar, so it never lives in this repo.
