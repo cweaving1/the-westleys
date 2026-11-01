@@ -659,7 +659,30 @@ document.querySelectorAll('.orn, .reveal').forEach(e => (CALM || REVIEW) ? e.cla
 
 // ---------- photo banner (Home) ----------
 // Jules is sending the photos. Add each as { src: 'photos/01.jpg', alt: '...' }; until then the tiles are placeholders.
-const BANNER = [];
+const BANNER = [
+  { src: 'photos/sesuit2026.jpg', alt: "Julia and Aidan on the water at sunset on Cape Cod" },
+  { src: 'photos/pariskiss.jpg', alt: "Julia and Aidan in Paris" },
+  { src: 'photos/pancrazio.jpg', alt: "Julia and Aidan in the Tuscan hills at dusk" },
+  { src: 'photos/capdail.jpg', alt: "Julia and Aidan in Cap-d'Ail" },
+  { src: 'photos/bk2026.jpg', alt: "Julia and Aidan in Brooklyn" },
+  { src: 'photos/cedarlake.jpg', alt: "Julia and Aidan dressed up at a wedding" },
+  { src: 'photos/ack.jpg', alt: "Julia and Aidan on Nantucket" },
+  { src: 'photos/tuscanhills.jpg', alt: "Julia and Aidan in Tuscany" },
+  { src: 'photos/pv2.jpg', alt: "Julia and Aidan on a coastal hike" },
+  { src: 'photos/frenchriviera.jpg', alt: "Julia and Aidan on a boat on the French Riviera" },
+  { src: 'photos/aidanlamarathon.jpg', alt: "Julia and Aidan after Aidan's LA Marathon" },
+  { src: 'photos/countryside1.jpg', alt: "Julia and Aidan by the water on a cold day" },
+  { src: 'photos/capferat.jpg', alt: "Julia and Aidan on the rocks at Cap Ferrat" },
+  { src: 'photos/brewrun2026.jpg', alt: "Julia and Aidan on church steps" },
+  { src: 'photos/thenewt.jpg', alt: "Julia and Aidan in the countryside with the cows" },
+  { src: 'photos/ack2024.jpg', alt: "Julia and Aidan fishing off Nantucket" },
+  { src: 'photos/pancrazioring.jpg', alt: "Julia and Aidan in an embrace at sunset" },
+  { src: 'photos/pv1.jpg', alt: "Julia and Aidan on a rocky beach" },
+  { src: 'photos/cape4thjuly.jpg', alt: "Julia and Aidan on the Cape on the Fourth of July" },
+  { src: 'photos/brewrun2025.jpg', alt: "Julia and Aidan after a run" },
+  { src: 'photos/swimriviera.jpg', alt: "Julia and Aidan swimming on the Riviera" },
+  { src: 'photos/countryside.jpg', alt: "Julia and Aidan walking through the dunes" }
+];
 (function banner() {
   const tiles = BANNER.length
     ? BANNER.map(b => `<div class="tile"><img src="${esc(b.src)}" alt="${esc(b.alt || '')}" loading="lazy"></div>`)
