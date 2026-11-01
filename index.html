@@ -150,10 +150,8 @@
 
   /* travel */
   .hotels { display: grid; grid-template-columns: repeat(2, 1fr); gap: 22px; align-items: start; }
-  .hotel.wide { grid-column: 1 / -1; text-align: center; padding: 40px 28px 34px; }
-  .hotel.wide .doodle { width: 64px; display: block; margin: 0 auto 10px; }
-  .hotel.wide .where { margin-bottom: 14px; }
-  .hotel.wide > p { margin: 18px 0 0; }
+  .hotel.wide { grid-column: 1 / -1; display: grid; grid-template-columns: 1fr auto; gap: 8px 40px; align-items: center; }
+  .hotel.wide > p { margin: 0; }
   .hotel { padding: 34px 28px 28px; }
   .hotel .tag { font: 400 17px/1 "mrs-eaves-roman-all-petite-c", serif; letter-spacing: .2em; color: var(--soft); }
   .hotel h3 { font: 400 29px/1.15 "mrs-eaves-roman-all-petite-c", serif; letter-spacing: .1em; margin: 8px 0 4px; color: var(--navy); }
@@ -225,6 +223,7 @@
     .hero-grid { text-align: center; }
     .countdown { justify-content: center; }
     .day, .hotel, .rsvp-box { padding: 32px 24px 24px; }
+    .hotel.wide { grid-template-columns: 1fr; }
     .ev { grid-template-columns: 1fr; }
     .photo { padding: 20px; }
     nav.bar .in { padding: 10px 16px; gap: 18px; }
@@ -360,6 +359,7 @@
     <a href="#travel">Travel &amp; Stay</a>
     <a href="#registry">Registry</a>
     <a href="#faq">Good to Know</a>
+    <a href="#guestbook">Guestbook</a>
     <a href="#rsvp" class="rsvp">RSVP</a>
   </div>
 </nav>
@@ -440,12 +440,9 @@
         </div>
         <div class="hotel frame wide">
           <div>
-          <svg class="doodle" viewBox="0 0 120 100" aria-hidden="true"><use href="#clam"/></svg>
           <span class="tag">Houses nearby · Chatham &amp; Brewster</span>
           <h3>Airbnb</h3>
           <p class="where">For families, or a group sharing a house</p>
-          <p class="fine">Book early. Summer houses on the Cape go quickly.</p>
-          <p class="fine">We've saved the rentals we like best in one list.</p>
           </div>
           <p><a class="btn ghost" href="https://www.airbnb.com/wishlists/2227752443" target="_blank" rel="noopener">See our list</a></p>
         </div>
