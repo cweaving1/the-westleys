@@ -336,7 +336,7 @@
       <svg viewBox="0 0 400 400" style="color:var(--navy)" aria-label="Julia and Aidan emblem"><use href="#emblem"/></svg>
       <form class="gate-form" id="gateForm" autocomplete="off">
         <label for="pw" class="sr" style="position:absolute;left:-9999px">Password</label>
-        <input id="pw" type="text" placeholder="password" autocapitalize="off" spellcheck="false" autofocus>
+        <input id="pw" type="text" placeholder="password" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" autofocus>
       </form>
     </div>
     <p class="gate-hint" id="gateHint">The password is on your save-the-date.</p>
@@ -365,12 +365,10 @@
     <p class="when">Sunday, August 1, 2027 · Chatham Bars Inn · Cape Cod</p>
     <div class="photo frame home-photo"><img src="hero.jpg" alt="Julia and Aidan walking beneath the Washington Square Arch"></div>
     <div class="knot-row">
-      <svg class="doodle" viewBox="0 0 120 100" aria-hidden="true"><use href="#oyster"/></svg>
       <figure class="knot" aria-live="polite">
         <svg viewBox="0 0 200 240" aria-hidden="true" id="knotArt"></svg>
         <figcaption><b id="days"></b><span>days to go</span></figcaption>
       </figure>
-      <svg class="doodle flip" viewBox="0 0 120 100" aria-hidden="true"><use href="#clam"/></svg>
     </div>
   </section>
   <!-- banner of photos sits outside the page sections so it can run edge to edge on Home only -->
@@ -711,10 +709,16 @@ function yn(name, label, val) {
     <label><input type="radio" name="${name}" value="true"${val === true ? ' checked' : ''}> Joyfully accepts</label>
     <label><input type="radio" name="${name}" value="false"${val === false ? ' checked' : ''}> Regretfully declines</label></div>`;
 }
+const CLOSED_MSG = 'RSVPs closed on February 1. To make a change, please email Julia or Aidan.';
 function showHousehold(h) {
-  const anyReply = h.guests.some(g => g.rsvp);
+  if (h.open === false) {
+    matchesEl.innerHTML = `<p class="kicker" style="margin:24px 0 0">${esc(h.label)}</p><p class="msg">${CLOSED_MSG}</p>`;
+    return;
+  }
+  // the server says only whether someone has replied, not what they said, so the form starts blank
+  const anyReply = h.guests.some(g => g.replied);
   matchesEl.innerHTML = `<form id="replyForm">
-    <p class="kicker" style="margin:24px 0 0">${esc(h.label)}${anyReply ? '<br><small>We have your reply. You can update it below.</small>' : ''}</p>
+    <p class="kicker" style="margin:24px 0 0">${esc(h.label)}${anyReply ? '<br><small>We have your reply. Sending this again will replace it.</small>' : ''}</p>
     ${h.guests.map((g, i) => {
       const r = g.rsvp || {};
       const name = g.first === 'Family' || g.first === 'Mrs.' ? h.label : `${g.first} ${g.last}`;
@@ -752,7 +756,8 @@ function showHousehold(h) {
       msg.className = 'msg ok';
       msg.textContent = yes ? "Thank you! We can't wait to celebrate with you." : "Thank you for letting us know. You'll be missed.";
     } catch (err) {
-      msg.className = 'msg err'; msg.textContent = "That didn't go through. Please try again.";
+      msg.className = 'msg err';
+      msg.textContent = /rsvp closed/.test(err.message) ? CLOSED_MSG : "That didn't go through. Please try again.";
     }
   });
 }
