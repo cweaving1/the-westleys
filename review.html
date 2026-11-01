@@ -213,7 +213,7 @@ body.ed-open main,body.ed-open header{margin-left:380px}
   }
   function say(text,err){ status.textContent=text||''; status.className='ed-status'+(err?' err':''); }
   function when(t){ return new Date(t).toLocaleString('en-US',{month:'short',day:'numeric',hour:'numeric',minute:'2-digit'}); }
-  var LABEL={queued:'Waiting to be made',draft:'Ready to preview',published:'Published',discarded:'Discarded',reply:'',failed:'Not changed'};
+  var LABEL={queued:'Making this now. Usually ready in a few minutes.',draft:'Ready to preview',published:'Published',discarded:'Discarded',reply:'',failed:'Not changed'};
   function drawLog(history){
     log.innerHTML=history.length?history.map(function(h){
       return '<div class="ed-msg me"><b>'+esc(h.author||'Jules')+' · '+when(h.created_at)+'</b><p>'+esc(h.request)+'</p></div>'+
@@ -227,9 +227,13 @@ body.ed-open main,body.ed-open header{margin-left:380px}
     if(d) $('ed-draft-note').textContent='Started '+when(d.created_at)+'.';
     if(!d) showPreview(false);
   }
+  var pollTimer=null;
   function refresh(){
     return call('state').then(function(s){
       drawLog(s.history); setDraft(s.draft);
+      // keep checking while a request is being made, so the preview appears without a reload
+      clearTimeout(pollTimer);
+      if(s.history.some(function(h){return h.status==='queued'})) pollTimer=setTimeout(refresh,20000);
       if(!s.configured.github){ say('Publishing is being set up. You can still send requests.'); }
       send.disabled=busy; if(!busy&&s.configured.github) say('');
     }).catch(function(e){ say(e.message,true); });
@@ -270,7 +274,7 @@ body.ed-open main,body.ed-open header{margin-left:380px}
     call('propose',{message:text,author:author||'Jules'}).then(function(r){
       msg.value=''; busy=false;
       return refresh().then(function(){
-        if(r.status==='queued'){ say('Saved. You\'ll see a preview here once it\'s made.'); return; }
+        if(r.status==='queued'){ say('Got it. This usually takes a few minutes; the preview will show up here.'); return; }
         if(r.status==='draft'){ say('Here is the preview.'); return showPreview(true); }
         say('');
       });
