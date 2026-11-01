@@ -48,6 +48,35 @@ button[aria-pressed="true"] .rv-badge{background:#fff;color:var(--navy)}
 #rv-dialog h2{margin:0 0 4px;font:600 22px/1.2 'Cormorant SC',serif;letter-spacing:.08em;color:var(--navy)}
 #rv-dialog .rv-primary{background:var(--navy);border-color:var(--navy);color:#fff}
 @media (max-width:760px){#rv-panel{top:auto;height:75vh;width:100%;border-left:0;border-top:1px solid var(--rule)}.rv-head button,#rv-dialog button{min-height:44px;font-size:14px}}
+/* change-request chat */
+.note.draft{color:var(--navy);font-weight:600}
+#ed-btn[aria-expanded="true"]{background:var(--navy);color:#fff}
+#ed-panel{position:fixed;left:0;top:0;bottom:0;width:380px;max-width:100%;background:#fff;border-right:1px solid var(--rule);box-shadow:8px 0 30px rgba(30,40,60,.15);z-index:21;display:flex;flex-direction:column;font-size:17px}
+#ed-panel[hidden]{display:none}
+.ed-head{position:relative;padding:14px 16px 4px;background:var(--tint);border-bottom:1px solid var(--rule)}
+.ed-head h2{margin:0;font:600 20px/1.15 'Cormorant SC',serif;letter-spacing:.1em;color:var(--navy);padding-right:70px}
+.ed-head p{margin:6px 0 10px;font-size:16px}
+#ed-close{position:absolute;right:12px;top:10px}
+#ed-panel button{font-size:13px;letter-spacing:.06em;min-height:40px;padding:0 12px}
+#ed-draft{padding:12px 16px;border-bottom:1px solid var(--rule);background:#FBF8F1}
+#ed-draft p{margin:0 0 8px}
+.ed-row{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+.ed-primary{background:var(--navy)!important;color:#fff!important}
+#ed-preview[aria-pressed="true"]{background:var(--tint)}
+#ed-log{flex:1;overflow:auto;padding:12px 16px}
+.ed-msg{margin:0 0 12px;line-height:1.4}
+.ed-msg b{display:block;font:600 13px/1.2 'Cormorant SC',serif;letter-spacing:.1em;color:var(--muted);margin-bottom:2px}
+.ed-msg.me p{background:var(--tint);padding:8px 10px;margin:0}
+.ed-msg.bot p{margin:0}
+.ed-msg small{color:var(--muted);font-style:italic}
+.ed-empty{color:var(--muted);font-style:italic}
+#ed-form{border-top:1px solid var(--rule);padding:12px 16px 16px}
+.ed-label{display:block;font-weight:600;margin-bottom:4px}
+#ed-msg{width:100%;min-height:84px;font:17px/1.35 'Cormorant Garamond',Georgia,serif;color:var(--ink);border:1px solid var(--rule);padding:8px 10px;margin-bottom:8px;resize:vertical}
+.ed-status{color:var(--muted);font-style:italic;font-size:16px}
+.ed-status.err{color:#8E3B3B;font-style:normal}
+body.ed-open main,body.ed-open header{margin-left:380px}
+@media (max-width:760px){#ed-panel{top:auto;height:80vh;width:100%;border-right:0;border-top:1px solid var(--rule)}body.ed-open main,body.ed-open header{margin-left:0}#ed-panel button{min-height:44px;font-size:14px}}
 </style>
 </head>
 <body>
@@ -70,6 +99,7 @@ button[aria-pressed="true"] .rv-badge{background:#fff;color:var(--navy)}
 <div class="rv-tools">
 <button type="button" id="rv-mode" aria-pressed="false">Comment</button>
 <button type="button" id="rv-panel-btn" aria-expanded="false" aria-controls="rv-panel">Comments <span id="rv-count"></span></button>
+<button type="button" id="ed-btn" aria-expanded="false" aria-controls="ed-panel">Ask for changes <span id="ed-dot" class="rv-badge" hidden>1</span></button>
 </div>
 </header>
 <main>
@@ -84,6 +114,23 @@ button[aria-pressed="true"] .rv-badge{background:#fff;color:var(--navy)}
 <div class="rv-row"><button type="button" id="rv-general">Comment on the whole page</button><button type="button" id="rv-showres">Show resolved</button></div>
 </div>
 <div id="rv-list" aria-live="polite"></div>
+</aside>
+<aside id="ed-panel" aria-labelledby="ed-title" hidden>
+<div class="ed-head">
+<h2 id="ed-title">Change the site</h2>
+<button type="button" id="ed-close">Close</button>
+<p>Tell us what to change, in your own words. You'll see a preview first; nothing goes live until you press Publish.</p>
+</div>
+<div id="ed-draft" hidden>
+<p><strong>You have unpublished changes.</strong> <span id="ed-draft-note"></span></p>
+<div class="ed-row"><button type="button" id="ed-preview" aria-pressed="false">Preview</button><button type="button" id="ed-publish" class="ed-primary">Publish</button><button type="button" id="ed-discard" class="linkish">Discard</button></div>
+</div>
+<div id="ed-log" aria-live="polite"></div>
+<form id="ed-form">
+<label for="ed-msg" class="ed-label">Your request</label>
+<textarea id="ed-msg" required maxlength="4000" placeholder="e.g. Change the welcome party time to 6:00 pm"></textarea>
+<div class="ed-row"><button type="submit" class="ed-primary" id="ed-send">Send</button><span id="ed-status" class="ed-status" role="status"></span></div>
+</form>
 </aside>
 <dialog id="rv-dialog" aria-labelledby="rv-dlg-title">
 <h2 id="rv-dlg-title">Comment on this spot</h2>
@@ -121,12 +168,23 @@ button[aria-pressed="true"] .rv-badge{background:#fff;color:var(--navy)}
     document.querySelectorAll('[data-view]').forEach(function(b){b.setAttribute('aria-pressed',b.dataset.view===view)});
     frame.className='frame'+(view==='phone'?' phone':'');
     ifr.removeAttribute('style'); frame.removeAttribute('style');
-    if(ifr.getAttribute('src')!==SRC[page]) ifr.setAttribute('src',SRC[page]);
-    ifr.title=NAMES[page]+' · '+view;
+    // A chat draft (window.__draftHtml) replaces the live page in the frame until it's published or closed.
+    var draft=window.__draftHtml && page!=='Portal';
+    if(draft){
+      var tab=SRC[page].split('#')[1];
+      if(ifr.srcdoc!==window.__draftHtml){ ifr.removeAttribute('src'); ifr.srcdoc=window.__draftHtml; ifr.onload=function(){ try{ifr.contentWindow.location.hash=window.__draftTab||tab;}catch(e){} }; }
+      else { try{ifr.contentWindow.location.hash=tab;}catch(e){} }
+      window.__draftTab=tab;
+    } else {
+      if(ifr.hasAttribute('srcdoc')){ ifr.removeAttribute('srcdoc'); ifr.onload=null; ifr.removeAttribute('src'); }
+      if(ifr.getAttribute('src')!==SRC[page]) ifr.setAttribute('src',SRC[page]);
+    }
+    ifr.title=NAMES[page]+' · '+view+(draft?' · draft preview':'');
     if(!window.__rvHasKey){ note.className='note warn'; note.textContent='Open this page from the review link Christa sent you to see and leave comments.'; }
+    else if(draft){ note.className='note draft'; note.textContent='Previewing your unpublished changes. Guests still see the live site until you publish.'; }
     else { note.className='note'; note.textContent=NAMES[page]+' · '+(view==='desktop'?'1440 px desktop, scaled to fit.':'390 px phone.')+' Scroll inside the frame. Click Comment, then click anywhere on the page to leave a note, or use Comments → Comment on the whole page.'+(page==='Portal'?' The portal needs your admin key to show data.':''); }
     fit();
-    window.MOHI={page:page,view:view,name:NAMES[page],ifr:ifr,setView:function(v){view=v;render()}};
+    window.MOHI={page:page,view:view,name:NAMES[page],ifr:ifr,setView:function(v){view=v;render()},render:render};
     dispatchEvent(new Event('mohi:render'));
   }
   document.querySelectorAll('[data-page]').forEach(function(b){b.onclick=function(){page=b.dataset.page;history.replaceState(null,'','#'+page);render()}});
@@ -138,5 +196,95 @@ button[aria-pressed="true"] .rv-badge{background:#fff;color:var(--navy)}
 </script>
 <script>window.MOHI_REVIEW={board:'westleys',mode:'pins'};</script>
 <script src="review.js"></script>
+<script>
+/* Change-request chat. Talks to the westley-editor edge function with the same review key as the comments.
+   Requests build up a draft; Preview shows it in the frame, Publish commits it to the live site. */
+(function(){
+  var API='https://afkjchshoktlmqrpopyk.supabase.co/functions/v1/westley-editor';
+  var key=''; try{ key=localStorage.getItem('mohi-review-code-westleys')||''; }catch(e){}
+  var $=function(id){return document.getElementById(id)};
+  var panel=$('ed-panel'), btn=$('ed-btn'), log=$('ed-log'), status=$('ed-status'), form=$('ed-form'), msg=$('ed-msg'), send=$('ed-send');
+  var draftBox=$('ed-draft'), previewBtn=$('ed-preview'), busy=false, hasDraft=false;
+  function esc(s){return String(s==null?'':s).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]})}
+  function call(action,extra){
+    var body=Object.assign({action:action,key:key},extra||{});
+    return fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)})
+      .then(function(r){return r.json().then(function(j){ if(!r.ok) throw new Error(j.error||('Error '+r.status)); return j; });});
+  }
+  function say(text,err){ status.textContent=text||''; status.className='ed-status'+(err?' err':''); }
+  function when(t){ return new Date(t).toLocaleString('en-US',{month:'short',day:'numeric',hour:'numeric',minute:'2-digit'}); }
+  var LABEL={draft:'Ready to preview',published:'Published',discarded:'Discarded',reply:'',failed:'Not changed'};
+  function drawLog(history){
+    log.innerHTML=history.length?history.map(function(h){
+      return '<div class="ed-msg me"><b>'+esc(h.author||'Jules')+' · '+when(h.created_at)+'</b><p>'+esc(h.request)+'</p></div>'+
+        (h.reply?'<div class="ed-msg bot"><b>Site editor</b><p>'+esc(h.reply)+'</p>'+(LABEL[h.status]?'<small>'+LABEL[h.status]+'</small>':'')+'</div>':'');
+    }).join(''):'<p class="ed-empty">No requests yet. Try something like "Add the rehearsal brunch on Monday at 10:00 at the Westley home."</p>';
+    log.scrollTop=log.scrollHeight;
+  }
+  function setDraft(d){
+    hasDraft=!!d; draftBox.hidden=!d; $('ed-dot').hidden=!d;
+    if(d) $('ed-draft-note').textContent='Started '+when(d.created_at)+'.';
+    if(!d) showPreview(false);
+  }
+  function refresh(){
+    return call('state').then(function(s){
+      drawLog(s.history); setDraft(s.draft);
+      if(!s.configured.anthropic||!s.configured.github){ say('The editor is being set up. You can try it shortly.'); send.disabled=true; }
+      else { send.disabled=false; if(!busy) say(''); }
+    }).catch(function(e){ say(e.message,true); });
+  }
+  // Preview: load the draft into the review frame in place of the live page.
+  function prep(html){
+    var base=location.href.replace(/[#?].*$/,'').replace(/[^/]*$/,'');
+    return html.replace(/<head>/i,'<head><base href="'+base+'">')
+      .replace("const REVIEW = new URLSearchParams(location.search).has('review');","const REVIEW = true;");
+  }
+  function showPreview(on){
+    if(!on){ window.__draftHtml=null; previewBtn.setAttribute('aria-pressed','false'); previewBtn.textContent='Preview'; if(window.MOHI) window.MOHI.render(); return Promise.resolve(); }
+    return call('draft_html').then(function(r){
+      if(!r.html){ say('Nothing to preview.'); return; }
+      window.__draftHtml=prep(r.html); previewBtn.setAttribute('aria-pressed','true'); previewBtn.textContent='Back to live site';
+      if(window.MOHI) window.MOHI.render();
+    }).catch(function(e){ say(e.message,true); });
+  }
+  previewBtn.onclick=function(){ showPreview(!window.__draftHtml); };
+  $('ed-publish').onclick=function(){
+    if(!confirm('Publish these changes? Guests will see them on the live site in about a minute.')) return;
+    say('Publishing…');
+    call('publish').then(function(){
+      say('Published. The live site updates in about a minute.');
+      showPreview(false); refresh();
+      setTimeout(function(){ var f=$('view'); if(!window.__draftHtml&&f.src) f.src=f.src.split('#')[0]+'&t='+Date.now()+'#'+(f.src.split('#')[1]||''); },70000);
+    }).catch(function(e){ say(e.message,true); });
+  };
+  $('ed-discard').onclick=function(){
+    if(!confirm('Discard all unpublished changes?')) return;
+    call('discard').then(function(){ say('Discarded. The live site is unchanged.'); refresh(); }).catch(function(e){ say(e.message,true); });
+  };
+  form.onsubmit=function(e){
+    e.preventDefault(); var text=msg.value.trim(); if(!text||busy) return;
+    busy=true; send.disabled=true; say('Working on it. This can take up to a minute.');
+    log.insertAdjacentHTML('beforeend','<div class="ed-msg me"><b>You · now</b><p>'+esc(text)+'</p></div>'); log.scrollTop=log.scrollHeight;
+    var author=''; try{ author=localStorage.getItem('mohi-review-name')||''; }catch(e2){}
+    call('propose',{message:text,author:author||'Jules'}).then(function(r){
+      msg.value=''; busy=false;
+      return refresh().then(function(){
+        if(r.status==='draft'){ say('Here is the preview.'); return showPreview(true); }
+        say('');
+      });
+    }).catch(function(err){ busy=false; send.disabled=false; say(err.message,true); });
+  };
+  msg.addEventListener('keydown',function(e){ if(e.key==='Enter'&&(e.metaKey||e.ctrlKey)) form.requestSubmit(); });
+  function open(on){
+    panel.hidden=!on; btn.setAttribute('aria-expanded',on); document.body.classList.toggle('ed-open',on);
+    if(on){ refresh(); msg.focus(); }
+    dispatchEvent(new Event('resize'));
+  }
+  btn.onclick=function(){ open(panel.hidden); };
+  $('ed-close').onclick=function(){ open(false); btn.focus(); };
+  if(!key){ btn.disabled=true; btn.title='Open this page from your review link'; }
+  else call('state').then(function(s){ setDraft(s.draft); }).catch(function(){});
+})();
+</script>
 </body>
 </html>
