@@ -96,9 +96,9 @@
   .frame { background: var(--white); outline: 1.5px solid var(--ink); outline-offset: -9px; box-shadow: inset 0 0 0 13px var(--white), inset 0 0 0 14.5px var(--ink); }
 
   /* hero */
-  .hero { padding-top: 64px; text-align: center; }
+  .hero { padding-top: 64px; padding-bottom: 28px; text-align: center; }
   .hero .names { font: 400 clamp(45px, 7vw, 83px)/1.02 "mrs-eaves-roman-all-petite-c", serif; letter-spacing: .1em; margin: 18px 0 10px; color: var(--navy); }
-  .hero .names .script { font-size: .9em; vertical-align: -.08em; margin: 0 .12em; color: var(--ink); }
+  .hero .names .amp { font: italic 400 .86em/0 "mrs-eaves", Georgia, serif; letter-spacing: 0; vertical-align: -.02em; margin: 0 .14em; color: var(--ink); }
   .hero .when { font: 400 clamp(19px, 2.6vw, 27px)/1.4 "mrs-eaves-roman-all-petite-c", serif; letter-spacing: .22em; margin: 0 0 34px; }
   .hero-grid { display: grid; grid-template-columns: 1.05fr 1fr; gap: 56px; align-items: center; text-align: left; max-width: 980px; margin: 0 auto; }
   .photo { padding: 26px; }
@@ -115,8 +115,9 @@
   .btn[disabled] { opacity: .5; cursor: default; }
 
   /* home */
-  .home-photo { max-width: 560px; margin: 8px auto 0; }
-  .knot-row { display: flex; align-items: center; justify-content: center; gap: clamp(16px, 5vw, 64px); margin: 56px auto 24px; }
+  .home-photo { max-width: 720px; margin: 8px auto 0; }
+  .home-photo img { aspect-ratio: 3 / 2; object-fit: cover; object-position: 50% 40%; }
+  .knot-row { display: flex; align-items: center; justify-content: center; gap: clamp(16px, 5vw, 64px); margin: 48px auto 8px; }
   .knot { position: relative; width: 190px; margin: 0; color: var(--navy); }
   .knot svg { display: block; width: 100%; height: auto; overflow: visible; }
   .knot figcaption { position: absolute; left: 0; right: 0; top: 41.5%; transform: translateY(-50%); text-align: center; }
@@ -124,7 +125,7 @@
   .knot span { display: block; margin-top: 4px; font: 400 17px/1 "mrs-eaves-roman-all-petite-c", serif; letter-spacing: .2em; color: var(--soft); }
   .doodle { width: 92px; color: var(--navy); opacity: .9; }
   .doodle.flip { transform: scaleX(-1); }
-  .banner { display: none; overflow: hidden; padding: 30px 0 10px; }
+  .banner { display: none; overflow: hidden; padding: 8px 0 10px; }
   body.on-home .banner { display: block; }
   .track { display: flex; gap: 18px; width: max-content; animation: drift 70s linear infinite; }
   .banner:hover .track { animation-play-state: paused; }
@@ -148,8 +149,8 @@
   .ev .cal { font: 400 15px/1 "mrs-eaves-roman-all-petite-c", serif; letter-spacing: .14em; margin-top: 8px; display: inline-block; }
 
   /* travel */
-  .hotels { display: grid; grid-template-columns: 1fr 1fr; gap: 28px; align-items: start; }
-  .hotel { padding: 40px 38px 34px; }
+  .hotels { display: grid; grid-template-columns: repeat(3, 1fr); gap: 22px; align-items: start; }
+  .hotel { padding: 34px 28px 28px; }
   .hotel .tag { font: 400 17px/1 "mrs-eaves-roman-all-petite-c", serif; letter-spacing: .2em; color: var(--soft); }
   .hotel h3 { font: 400 29px/1.15 "mrs-eaves-roman-all-petite-c", serif; letter-spacing: .1em; margin: 8px 0 4px; color: var(--navy); }
   .hotel .where { font-style: italic; color: var(--soft); margin: 0 0 18px; }
@@ -160,7 +161,7 @@
   .drop { border-top: 1px solid var(--rule); margin-top: 14px; padding-top: 12px; }
   .drop summary { font: 400 18px/1.3 "mrs-eaves-roman-all-petite-c", serif; letter-spacing: .16em; }
   .drop[open] summary { margin-bottom: 12px; }
-  .more { display: grid; grid-template-columns: 1fr 1fr; gap: 28px; margin-top: 52px; }
+  .more { display: grid; grid-template-columns: 1fr; gap: 28px; max-width: 520px; margin: 52px auto 0; }
   .more-card { padding: 34px 32px 30px; text-align: center; }
   .more-card .doodle { width: 74px; display: block; margin: 0 auto 10px; }
   .more-card h3 { font: 400 25px/1.2 "mrs-eaves-roman-all-petite-c", serif; letter-spacing: .12em; margin: 0 0 6px; color: var(--navy); }
@@ -260,15 +261,17 @@
         </g>
       </g>
     </symbol>
-    <!-- Oyster on the half shell: frilled rim, smooth inner lip, the meat with a soft gill line -->
+    <!-- Oyster on the half shell: hinge at the left, the shell fanning open, the meat with a soft gill line -->
     <symbol id="oyster" viewBox="0 0 120 100">
       <g filter="url(#brush)" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
-        <path stroke-width="1.8" d="M14 60 C 16 48, 26 36, 40 28 C 46 22, 54 24, 60 18 C 68 14, 76 20, 84 16 C 94 14, 100 24, 106 30 C 114 38, 110 48, 114 56 C 116 66, 106 70, 104 78 C 100 88, 88 84, 80 90 C 70 94, 62 86, 52 88 C 40 90, 34 80, 26 76 C 18 72, 12 68, 14 60 Z"/>
-        <path stroke-width="1.1" d="M24 60 C 28 48, 40 38, 54 34 C 68 30, 88 30, 98 40 C 106 48, 104 64, 96 72 C 86 80, 66 82, 50 79 C 36 76, 26 70, 24 60 Z"/>
-        <path stroke-width="1.5" d="M40 58 C 44 48, 58 42, 74 43 C 88 44, 94 52, 90 62 C 86 70, 72 73, 58 71 C 46 69, 38 66, 40 58 Z"/>
-        <path stroke-width="1" stroke-dasharray="2.4 2" d="M46 58 C 50 51, 60 48, 72 49 C 82 50, 86 55, 84 61"/>
-        <circle cx="71" cy="61" r="3.2" fill="currentColor" stroke="none"/>
-        <path stroke-width=".9" d="M18 62 q 3 -4 6 -2 M30 40 q 4 -1 5 3 M44 28 q 2 3 -1 6 M62 22 q 3 3 0 6 M80 20 q 1 4 -2 6 M96 22 q -1 4 -5 4 M108 40 q -4 2 -6 -1 M110 56 q -4 1 -5 -2 M102 74 q -4 -1 -4 -4 M90 86 q -1 -4 2 -6 M70 90 q -1 -4 2 -5 M52 86 q 0 -4 4 -5 M30 78 q 2 -4 6 -3"/>
+        <path stroke-width="1.9" d="M18 52 C 20 36, 34 23, 54 19 C 74 15, 94 20, 103 33 C 111 45, 108 61, 96 72 C 83 84, 60 87, 42 80 C 26 74, 16 64, 18 52 Z"/>
+        <path stroke-width="1.4" d="M18 52 C 11 50, 11 42, 17 40"/>
+        <path stroke-width="1.1" d="M29 52 C 31 40, 43 31, 58 28 C 73 25, 89 30, 95 41 C 101 51, 97 63, 86 70 C 74 78, 56 79, 43 73 C 32 68, 28 60, 29 52 Z"/>
+        <path stroke-width="1.5" d="M43 53 C 45 44, 56 38, 69 40 C 81 42, 87 50, 84 59 C 80 68, 66 72, 54 69 C 45 66, 42 60, 43 53 Z"/>
+        <path stroke-width="1" stroke-dasharray="2.6 2.2" d="M48 57 C 53 49, 63 45, 75 47"/>
+        <circle cx="74" cy="59" r="2.8" fill="currentColor" stroke="none"/>
+        <path stroke-width=".8" d="M24 46 l 6 -1.5 M23.5 53 l 6.2 -.4 M25 60 l 6 1.4"/>
+        <path stroke-width=".9" d="M34 25 q 3 2 1 5 M50 19 q 2 3 -1 5 M68 17 q 2 3 -1 5 M86 21 q 1 3 -2 4 M100 33 q -2 3 -5 1 M105 51 q -4 2 -4 -1 M98 67 q -3 -1 -2 -4 M84 79 q -2 -3 1 -5 M62 85 q -1 -4 2 -5 M42 80 q 0 -4 4 -4"/>
       </g>
     </symbol>
     <!-- Quahog: a round clam with growth rings and the hinge at the top -->
@@ -361,7 +364,7 @@
 <main>
   <!-- HOME -->
   <section id="home" class="hero">
-    <h1 class="names">Julia <span class="script">&amp;</span> Aidan</h1>
+    <h1 class="names">Julia <span class="amp">&amp;</span> Aidan</h1>
     <p class="when">Sunday, August 1, 2027 · Chatham Bars Inn · Cape Cod</p>
     <div class="photo frame home-photo"><img src="hero.jpg" alt="Julia and Aidan walking beneath the Washington Square Arch"></div>
     <div class="knot-row">
@@ -436,6 +439,14 @@
             <p class="fine">A beach bar, and the Brewster flats right outside, where you can walk out for miles at low tide.</p>
           </details>
         </div>
+        <div class="hotel frame">
+          <span class="tag">Houses nearby · Chatham &amp; Brewster</span>
+          <h3>Airbnb</h3>
+          <p class="where">For families, or a group sharing a house</p>
+          <p class="fine">Book early. Summer houses on the Cape go quickly.</p>
+          <p class="fine">We've saved the rentals we like best in one list.</p>
+          <p><a class="btn ghost" href="https://www.airbnb.com/wishlists/2227752443" target="_blank" rel="noopener">See our list</a></p>
+        </div>
       </div>
       <div class="getting">
         <div><h4>Flying in</h4><p>Boston Logan (BOS) is about two hours by car. Hyannis (HYA) is about half an hour from Chatham.</p></div>
@@ -443,12 +454,6 @@
         <div><h4>Parking</h4><p>Valet parking at Chatham Bars Inn.</p></div>
       </div>
       <div class="more">
-        <div class="more-card frame">
-          <svg class="doodle" viewBox="0 0 120 100" aria-hidden="true"><use href="#clam"/></svg>
-          <h3>Houses Nearby</h3>
-          <p>Our list of rentals close to Chatham and Brewster.</p>
-          <span class="soon" data-todo="airbnb-list">List coming soon</span>
-        </div>
         <div class="more-card frame">
           <svg class="doodle" viewBox="0 0 120 100" aria-hidden="true"><use href="#oyster"/></svg>
           <h3>Where We Like to Eat</h3>
@@ -484,7 +489,6 @@
       <svg class="orn flip" viewBox="0 0 240 64" aria-hidden="true"><use href="#fish"/></svg>
       <h2>Registry</h2>
       <p class="kicker">Coming soon</p>
-      <svg class="doodle" viewBox="0 0 120 100" aria-hidden="true" style="display:block;margin:28px auto 0"><use href="#oyster"/></svg>
     </div>
   </section>
 
@@ -659,7 +663,7 @@ const BANNER = [];
 (function banner() {
   const tiles = BANNER.length
     ? BANNER.map(b => `<div class="tile"><img src="${esc(b.src)}" alt="${esc(b.alt || '')}" loading="lazy"></div>`)
-    : Array.from({ length: 8 }, (_, i) => `<div class="tile todo"><div><svg viewBox="0 0 ${i % 3 ? 120 : 240} ${i % 3 ? 100 : 64}"><use href="#${['fish', 'oyster', 'clam'][i % 3]}"/></svg>Photo to come</div></div>`);
+    : Array.from({ length: 8 }, () => `<div class="tile todo"><div>Photo to come</div></div>`);
   // two copies side by side so the drift loops without a seam
   document.getElementById('track').innerHTML = tiles.join('') + tiles.join('').replace(/<div class="tile/g, '<div aria-hidden="true" class="tile');
 })();
