@@ -214,11 +214,14 @@ body.ed-open main,body.ed-open header{margin-left:380px}
   function say(text,err){ status.textContent=text||''; status.className='ed-status'+(err?' err':''); }
   function when(t){ return new Date(t).toLocaleString('en-US',{month:'short',day:'numeric',hour:'numeric',minute:'2-digit'}); }
   var LABEL={queued:'Making this now. Usually ready in a few minutes.',draft:'Ready to preview',published:'Published',discarded:'Discarded',reply:'',failed:'Not changed'};
+  // requests are made on Christa's computer; if it's asleep they wait, so say so rather than promise minutes
+  function queuedLabel(h){ return Date.now()-new Date(h.created_at)>15*60e3
+    ? 'Taking longer than usual. It\'ll be made as soon as Christa\'s computer is back on.' : LABEL.queued; }
   function drawLog(history){
     log.innerHTML=history.length?history.map(function(h){
       return '<div class="ed-msg me"><b>'+esc(h.author||'Jules')+' · '+when(h.created_at)+'</b><p>'+esc(h.request)+'</p></div>'+
         (h.reply?'<div class="ed-msg bot"><b>Site editor</b><p>'+esc(h.reply)+'</p>'+(LABEL[h.status]?'<small>'+LABEL[h.status]+'</small>':'')+'</div>'
-          :(h.status==='queued'?'<div class="ed-msg bot"><small>'+LABEL.queued+'</small></div>':''));
+          :(h.status==='queued'?'<div class="ed-msg bot"><small>'+queuedLabel(h)+'</small></div>':''));
     }).join(''):'<p class="ed-empty">No requests yet. Try something like "Add the rehearsal brunch on Monday at 10:00 at the Westley home."</p>';
     log.scrollTop=log.scrollHeight;
   }
