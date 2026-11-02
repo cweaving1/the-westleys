@@ -94,6 +94,15 @@ button[aria-pressed="true"] .rv-badge{background:#fff;color:var(--navy)}
 #ed-alert.ok{background:#E8F1EA;color:#2F5A3B}
 #ed-alert.err{background:#F7E9E7;color:#7A2E2E}
 #ed-alert b{display:block;margin-bottom:2px}
+/* photos attached to a request */
+.ed-add{display:inline-flex;align-items:center;font:600 13px/1 'Cormorant SC',serif;letter-spacing:.06em;min-height:40px;padding:0 12px;border:1px dashed var(--navy);color:var(--navy);cursor:pointer;background:#fff}
+#ed-thumbs{display:flex;flex-wrap:wrap;gap:8px;margin:8px 0}
+#ed-thumbs:empty{display:none}
+.ed-thumb{position:relative;width:72px;height:72px}
+.ed-thumb img{width:100%;height:100%;object-fit:cover;display:block;border:1px solid var(--rule)}
+.ed-thumb button{position:absolute;top:-8px;right:-8px;min-height:0!important;width:24px;height:24px;padding:0!important;border-radius:12px;font:600 14px/1 Georgia,serif!important;background:#fff}
+.ed-msg .shots{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px}
+.ed-msg .shots img{width:56px;height:56px;object-fit:cover;border:1px solid var(--rule)}
 body.ed-open main,body.ed-open header{margin-left:380px}
 @media (max-width:760px){#ed-panel{top:auto;height:80vh;width:100%;border-right:0;border-top:1px solid var(--rule)}body.ed-open main,body.ed-open header{margin-left:0}#ed-panel button{min-height:44px;font-size:14px}}
 </style>
@@ -148,8 +157,9 @@ body.ed-open main,body.ed-open header{margin-left:380px}
 <div id="ed-log" aria-live="polite"></div>
 <form id="ed-form">
 <label for="ed-msg" class="ed-label">Your request</label>
-<textarea id="ed-msg" required maxlength="4000" placeholder="e.g. Change the welcome party time to 6:00 pm"></textarea>
-<div class="ed-row"><button type="submit" class="ed-primary" id="ed-send">Send</button><span id="ed-status" class="ed-status" role="status"></span></div>
+<textarea id="ed-msg" required maxlength="3000" placeholder="e.g. Change the welcome party time to 6:00 pm, or: add these photos to the photo strip on Home"></textarea>
+<div id="ed-thumbs"></div>
+<div class="ed-row"><button type="submit" class="ed-primary" id="ed-send">Send</button><label class="ed-add">Add photos<input type="file" id="ed-file" accept="image/*" multiple hidden></label><span id="ed-status" class="ed-status" role="status"></span></div>
 </form>
 </aside>
 <dialog id="rv-dialog" aria-labelledby="rv-dlg-title">
@@ -255,6 +265,8 @@ body.ed-open main,body.ed-open header{margin-left:380px}
       return ['This page isn\'t signed in','Open it from the review link Christa sent you.'];
     if(/limit of requests/i.test(m))
       return ['That\'s the limit for today','Try again tomorrow, or ask Christa.'];
+    if(/photo/i.test(m))                                    // the server's photo messages are already plain
+      return ['That photo couldn\'t be added',m];
     if(/being set up|switched on/i.test(m))
       return ['Publishing isn\'t working right now','Christa needs to check the site\'s connection to GitHub. Your changes are saved.'];
     return ['Something went wrong while '+doing,'Nothing was published. Wait a minute and try once more. If it happens again, tell Christa: "'+m.slice(0,120)+'"'];
@@ -266,7 +278,10 @@ body.ed-open main,body.ed-open header{margin-left:380px}
     ? 'Taking longer than usual. It\'ll be made as soon as Christa\'s computer is back on.' : LABEL.queued; }
   function drawLog(history){
     log.innerHTML=history.length?history.map(function(h){
-      return '<div class="ed-msg me"><b>'+esc(h.author||'Jules')+' · '+when(h.created_at)+'</b><p>'+esc(h.request)+'</p></div>'+
+      // photos ride in the request as "- photos/uploads/… (w×h)" lines after PHOTOS_MARK; show them as thumbnails
+      var parts=String(h.request).split(PHOTOS_MARK), shots=(parts[1]||'').match(/photos\/uploads\/[\w.-]+\.jpg/g)||[];
+      return '<div class="ed-msg me"><b>'+esc(h.author||'Jules')+' · '+when(h.created_at)+'</b><p>'+esc(parts[0])
+        +(shots.length?'<span class="shots">'+shots.map(function(s){return '<img src="'+esc(s)+'" alt="">'}).join('')+'</span>':'')+'</p></div>'+
         (h.reply?'<div class="ed-msg bot"><b>Site editor</b><p>'+esc(h.reply)+'</p>'+(LABEL[h.status]?'<small>'+LABEL[h.status]+'</small>':'')+'</div>'
           :(h.status==='queued'?'<div class="ed-msg bot"><small>'+queuedLabel(h)+'</small></div>':''));
     }).join(''):'<p class="ed-empty">No requests yet. Try something like "Add the rehearsal brunch on Monday at 10:00 at the Westley home."</p>';
@@ -277,7 +292,7 @@ body.ed-open main,body.ed-open header{margin-left:380px}
     if(d) $('ed-draft-note').textContent='Started '+when(d.created_at)+'.';
     if(!d&&!window.__published) showPreview(false);
   }
-  var pollTimer=null, lastHistory=[];
+  var pollTimer=null, lastHistory=[], PHOTOS_MARK='\n\nPhotos:\n';
   function refresh(){
     return call('state').then(function(s){
       lastHistory=s.history; drawLog(s.history); setDraft(s.draft);
@@ -352,22 +367,78 @@ body.ed-open main,body.ed-open header{margin-left:380px}
     call('discard').then(function(){ banner('info','Discarded','Those changes were thrown away. The live site is unchanged.'); refresh(); })
       .catch(function(e){ var f=friendly(e,'discarding'); banner('err',f[0],f[1]); });
   };
+  // Photos: resized here for the web before anything is sent (long side 1400px: sharp in the header on a retina
+  // screen, the largest place a photo shows; JPEG at 80%, lower if still over 600 KB; this also drops the phone's
+  // location data). Saved to the site when she presses Send, and listed in the request so the editor uses that file.
+  var fileIn=$('ed-file'), thumbs=$('ed-thumbs'), photos=[], MAX_PHOTOS=10, WEB_EDGE=1400, WEB_BYTES=600e3;
+  function shrink(file){
+    return new Promise(function(ok,bad){
+      var url=URL.createObjectURL(file), img=new Image();
+      img.onload=function(){
+        var s=Math.min(1,WEB_EDGE/Math.max(img.naturalWidth,img.naturalHeight)), c=document.createElement('canvas');
+        c.width=Math.round(img.naturalWidth*s); c.height=Math.round(img.naturalHeight*s);
+        var g=c.getContext('2d'); g.fillStyle='#fff'; g.fillRect(0,0,c.width,c.height); g.drawImage(img,0,0,c.width,c.height);
+        URL.revokeObjectURL(url);
+        var q=0.8, data=c.toDataURL('image/jpeg',q);
+        while(data.length*0.75>WEB_BYTES&&q>0.5){ q-=0.1; data=c.toDataURL('image/jpeg',q); }
+        ok({name:file.name,data:data.split(',')[1],preview:data,w:c.width,h:c.height,path:null});
+      };
+      img.onerror=function(){ URL.revokeObjectURL(url); bad(new Error(file.name)); };
+      img.src=url;
+    });
+  }
+  function drawThumbs(){
+    thumbs.innerHTML='';
+    photos.forEach(function(p,i){
+      var d=document.createElement('div'); d.className='ed-thumb';
+      d.innerHTML='<img alt=""><button type="button" aria-label="Remove this photo">×</button>';
+      d.firstChild.src=p.preview;
+      d.lastChild.onclick=function(){ if(busy) return; photos.splice(i,1); drawThumbs(); };
+      thumbs.appendChild(d);
+    });
+  }
+  fileIn.onchange=function(){
+    var files=[].slice.call(fileIn.files); fileIn.value='';
+    if(photos.length+files.length>MAX_PHOTOS){ banner('err','Up to '+MAX_PHOTOS+' photos at a time','Send these, then add the rest in another request.'); files=files.slice(0,MAX_PHOTOS-photos.length); }
+    var unreadable=[];
+    files.reduce(function(chain,f){
+      return chain.then(function(){ return shrink(f).then(function(p){ photos.push(p); drawThumbs(); },function(){ unreadable.push(f.name); }); });
+    },Promise.resolve()).then(function(){
+      if(unreadable.length) banner('err','Couldn\'t open '+unreadable.join(', '),'This browser can\'t read that kind of file. Try a JPEG, or add it from your phone\'s photo library.');
+    });
+  };
+  // Save each photo not saved yet; a retry after a failure skips the ones already saved.
+  function uploadPhotos(){
+    return photos.reduce(function(chain,p,i){
+      return chain.then(function(){
+        if(p.path) return;
+        say('Adding photo '+(i+1)+' of '+photos.length+'…');
+        return call('upload',{name:p.name,data:p.data}).then(function(r){ p.path=r.path; });
+      });
+    },Promise.resolve());
+  }
   form.onsubmit=function(e){
     e.preventDefault(); var text=msg.value.trim(); if(!text||busy) return;
-    var same=earlier(text);
+    var same=!photos.length&&earlier(text);
     if(same&&same.status!=='discarded'&&!confirm('You already asked for this on '+when(same.created_at)+', and it '+(WHERE[same.status]||'was received')+'.'
       +(same.status==='published'?' If the site still looks old, close it and open it again.':'')+'\n\nSend it again anyway?')) return;
     busy=true; send.disabled=true; say('Saving…'); banner(null);
-    log.insertAdjacentHTML('beforeend','<div class="ed-msg me"><b>You · now</b><p>'+esc(text)+'</p></div>'); log.scrollTop=log.scrollHeight;
     var author=''; try{ author=localStorage.getItem('mohi-review-name')||''; }catch(e2){}
-    call('propose',{message:text,author:author||'Jules'}).then(function(r){
-      msg.value=''; busy=false;
+    var doing='adding your photos';
+    uploadPhotos().then(function(){
+      doing='sending your request';
+      var full=text+(photos.length?PHOTOS_MARK+photos.map(function(p){return '- '+p.path+' ('+p.w+'×'+p.h+')'}).join('\n'):'');
+      log.insertAdjacentHTML('beforeend','<div class="ed-msg me"><b>You · now</b><p>'+esc(text)+(photos.length?' ('+photos.length+' photo'+(photos.length>1?'s':'')+')':'')+'</p></div>'); log.scrollTop=log.scrollHeight;
+      say('Saving…');
+      return call('propose',{message:full,author:author||'Jules'});
+    }).then(function(r){
+      msg.value=''; busy=false; photos=[]; drawThumbs();
       return refresh().then(function(){
         if(r.status==='queued'){ say('Got it. This usually takes a few minutes; the preview will show up here.'); return; }
         if(r.status==='draft'){ say('Here is the preview.'); return showPreview(true); }
         say('');
       });
-    }).catch(function(err){ busy=false; send.disabled=false; say(''); var f=friendly(err,'sending your request'); banner('err',f[0],f[1]+' Your text is still in the box.'); });
+    }).catch(function(err){ busy=false; send.disabled=false; say(''); var f=friendly(err,doing); banner('err',f[0],f[1]+' Your text'+(photos.length?' and photos are':' is')+' still here, so you can press Send again.'); });
   };
   msg.addEventListener('keydown',function(e){ if(e.key==='Enter'&&(e.metaKey||e.ctrlKey)) form.requestSubmit(); });
   function open(on){
