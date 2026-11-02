@@ -147,7 +147,7 @@ body.ed-open main,body.ed-open header{margin-left:380px}
 <div class="ed-head">
 <h2 id="ed-title">Change the site</h2>
 <button type="button" id="ed-close">Close</button>
-<p>Tell us what to change, in your own words. Christa's assistant makes the changes in batches, usually the same day. You'll see a preview here first; nothing goes live until you press Publish.</p>
+<p>Tell us what to change, in your own words. Taffy, Christa's assistant, makes the changes in batches, usually the same day. You'll see a preview here first; nothing goes live until you press Publish.</p>
 <p>For photos, press Add photos, or paste a Google Drive or Dropbox link to a shared folder ("Anyone with the link"). Say where they should go. Photos are resized for the web automatically.</p>
 </div>
 <div id="ed-alert" role="alert" hidden></div>
@@ -257,7 +257,7 @@ body.ed-open main,body.ed-open header{margin-left:380px}
   function friendly(e,doing){
     var m=String(e&&e.message||e||'');
     if(/Failed to fetch|NetworkError|Load failed|network/i.test(m))
-      return ['Couldn\'t reach the site editor','Check your internet connection and try again in a minute. Nothing was lost.'];
+      return ['Couldn\'t reach Taffy','Check your internet connection and try again in a minute. Nothing was lost.'];
     if(/nothing waiting to publish/i.test(m))
       return ['Nothing new to publish','Everything you asked for earlier is already published. If the site still looks old, close it and open it again.'];
     if(/site changed since/i.test(m))
@@ -283,7 +283,7 @@ body.ed-open main,body.ed-open header{margin-left:380px}
       var parts=String(h.request).split(PHOTOS_MARK), shots=(parts[1]||'').match(/photos\/uploads\/[\w.-]+\.jpg/g)||[];
       return '<div class="ed-msg me"><b>'+esc(h.author||'Jules')+' · '+when(h.created_at)+'</b><p>'+esc(parts[0])
         +(shots.length?'<span class="shots">'+shots.map(function(s){return '<img src="'+esc(s)+'" alt="">'}).join('')+'</span>':'')+'</p></div>'+
-        (h.reply?'<div class="ed-msg bot"><b>Site editor</b><p>'+esc(h.reply)+'</p>'+(LABEL[h.status]?'<small>'+LABEL[h.status]+'</small>':'')+'</div>'
+        (h.reply?'<div class="ed-msg bot"><b>Taffy</b><p>'+esc(h.reply)+'</p>'+(LABEL[h.status]?'<small>'+LABEL[h.status]+'</small>':'')+'</div>'
           :(h.status==='queued'?'<div class="ed-msg bot"><small>'+queuedLabel(h)+'</small></div>':''));
     }).join(''):'<p class="ed-empty">No requests yet. Try something like "Add the rehearsal brunch on Monday at 10:00 at the Westley home."</p>';
     log.scrollTop=log.scrollHeight;
