@@ -6,6 +6,20 @@
 <meta name="robots" content="noindex, nofollow">
 <!-- Changes requested through the review-page editor are published by westley-editor. -->
 <title>Julia &amp; Aidan · August 1, 2027</title>
+<script id="fresh-check">
+/* GitHub Pages lets browsers reuse this page for 10 minutes without asking, so right after a publish phones kept
+   showing the old version. Ask the server (a quick "has it changed?" check) and reload once if a newer one is up. */
+(function(){
+  if (!/^https?:$/.test(location.protocol)) return;            // the review page's draft preview runs as about:srcdoc
+  var mine = Date.parse(document.lastModified);
+  fetch(location.pathname + location.search, { cache: 'no-cache' }).then(function(r){
+    var live = Date.parse(r.headers.get('last-modified') || '');
+    if (!(live - mine > 1000)) return;
+    try { if (sessionStorage.getItem('fresh-check') === String(live)) return; sessionStorage.setItem('fresh-check', String(live)); } catch (e) {}
+    location.reload();
+  }).catch(function(){});
+})();
+</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://use.typekit.net/bjv0cnh.css">
