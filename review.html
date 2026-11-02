@@ -5,6 +5,18 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="robots" content="noindex, nofollow">
 <title>Julia &amp; Aidan · Site review</title>
+<script>
+/* GitHub Pages lets browsers reuse a page for 10 minutes without asking. Reload once if a newer version is up. */
+(function(){
+  var mine = Date.parse(document.lastModified);
+  fetch(location.pathname, { cache: 'no-cache' }).then(function(r){
+    var live = Date.parse(r.headers.get('last-modified') || '');
+    if (!(live - mine > 1000)) return;
+    try { if (sessionStorage.getItem('fresh-check-review') === String(live)) return; sessionStorage.setItem('fresh-check-review', String(live)); } catch (e) {}
+    location.reload();
+  }).catch(function(){});
+})();
+</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600&family=Cormorant+SC:wght@500;600&display=swap" rel="stylesheet">
@@ -75,6 +87,13 @@ button[aria-pressed="true"] .rv-badge{background:#fff;color:var(--navy)}
 #ed-msg{width:100%;min-height:84px;font:17px/1.35 'Cormorant Garamond',Georgia,serif;color:var(--ink);border:1px solid var(--rule);padding:8px 10px;margin-bottom:8px;resize:vertical}
 .ed-status{color:var(--muted);font-style:italic;font-size:16px}
 .ed-status.err{color:#8E3B3B;font-style:normal}
+/* one plain message about where things stand, so nobody presses Publish again to find out */
+#ed-alert{margin:0;padding:10px 16px;border-bottom:1px solid var(--rule);font-size:16px;line-height:1.4}
+#ed-alert[hidden]{display:none}
+#ed-alert.info{background:#EEF1F5;color:var(--navy)}
+#ed-alert.ok{background:#E8F1EA;color:#2F5A3B}
+#ed-alert.err{background:#F7E9E7;color:#7A2E2E}
+#ed-alert b{display:block;margin-bottom:2px}
 body.ed-open main,body.ed-open header{margin-left:380px}
 @media (max-width:760px){#ed-panel{top:auto;height:80vh;width:100%;border-right:0;border-top:1px solid var(--rule)}body.ed-open main,body.ed-open header{margin-left:0}#ed-panel button{min-height:44px;font-size:14px}}
 </style>
@@ -121,6 +140,7 @@ body.ed-open main,body.ed-open header{margin-left:380px}
 <button type="button" id="ed-close">Close</button>
 <p>Tell us what to change, in your own words. Christa's assistant makes the changes in batches, usually the same day. You'll see a preview here first; nothing goes live until you press Publish.</p>
 </div>
+<div id="ed-alert" role="alert" hidden></div>
 <div id="ed-draft" hidden>
 <p><strong>You have unpublished changes.</strong> <span id="ed-draft-note"></span></p>
 <div class="ed-row"><button type="button" id="ed-preview" aria-pressed="false">Preview</button><button type="button" id="ed-publish" class="ed-primary">Publish</button><button type="button" id="ed-discard" class="linkish">Discard</button></div>
@@ -213,6 +233,32 @@ body.ed-open main,body.ed-open header{margin-left:380px}
       .then(function(r){return r.json().then(function(j){ if(!r.ok) throw new Error(j.error||('Error '+r.status)); return j; });});
   }
   function say(text,err){ status.textContent=text||''; status.className='ed-status'+(err?' err':''); }
+  // The banner at the top of the panel: what happened and what to do next. kind = info | ok | err.
+  var alertBox=$('ed-alert');
+  function banner(kind,title,text){
+    if(!kind){ alertBox.hidden=true; return; }
+    alertBox.className=kind; alertBox.hidden=false;
+    alertBox.innerHTML='<b>'+esc(title)+'</b>'+esc(text||'');
+    if(panel.hidden) open(true);
+  }
+  function clock(d){ return (d||new Date()).toLocaleTimeString('en-US',{hour:'numeric',minute:'2-digit'}); }
+  // Turn a server or network error into what it means for Jules and what to do about it.
+  function friendly(e,doing){
+    var m=String(e&&e.message||e||'');
+    if(/Failed to fetch|NetworkError|Load failed|network/i.test(m))
+      return ['Couldn\'t reach the site editor','Check your internet connection and try again in a minute. Nothing was lost.'];
+    if(/nothing waiting to publish/i.test(m))
+      return ['Nothing new to publish','Everything you asked for earlier is already published. If the site still looks old, close it and open it again.'];
+    if(/site changed since/i.test(m))
+      return ['These changes are out of date','The site was updated after they were made, so publishing them could undo something. Press Discard, then send the requests again.'];
+    if(/review link/i.test(m))
+      return ['This page isn\'t signed in','Open it from the review link Christa sent you.'];
+    if(/limit of requests/i.test(m))
+      return ['That\'s the limit for today','Try again tomorrow, or ask Christa.'];
+    if(/being set up|switched on/i.test(m))
+      return ['Publishing isn\'t working right now','Christa needs to check the site\'s connection to GitHub. Your changes are saved.'];
+    return ['Something went wrong while '+doing,'Nothing was published. Wait a minute and try once more. If it happens again, tell Christa: "'+m.slice(0,120)+'"'];
+  }
   function when(t){ return new Date(t).toLocaleString('en-US',{month:'short',day:'numeric',hour:'numeric',minute:'2-digit'}); }
   var LABEL={queued:'Making this now. Usually ready in a few minutes.',draft:'Ready to preview',published:'Published',discarded:'Discarded',reply:'',failed:'Not changed'};
   // requests are made on Christa's computer; if it's asleep they wait, so say so rather than promise minutes
@@ -231,17 +277,28 @@ body.ed-open main,body.ed-open header{margin-left:380px}
     if(d) $('ed-draft-note').textContent='Started '+when(d.created_at)+'.';
     if(!d&&!window.__published) showPreview(false);
   }
-  var pollTimer=null;
+  var pollTimer=null, lastHistory=[];
   function refresh(){
     return call('state').then(function(s){
-      drawLog(s.history); setDraft(s.draft);
+      lastHistory=s.history; drawLog(s.history); setDraft(s.draft);
       // keep checking while a request is being made, so the preview appears without a reload
       clearTimeout(pollTimer);
-      if(s.history.some(function(h){return h.status==='queued'})) pollTimer=setTimeout(refresh,20000);
+      var waiting=s.history.filter(function(h){return h.status==='queued'});
+      if(waiting.length) pollTimer=setTimeout(refresh,20000);
+      if(waiting.some(function(h){return Date.now()-new Date(h.created_at)>15*60e3}))
+        banner('info','Your request is waiting','Changes are made on Christa\'s computer, which seems to be off or asleep. Your request is saved and will be made when it\'s back on. No need to send it again.');
       if(!s.configured.github){ say('Publishing is being set up. You can still send requests.'); }
       send.disabled=busy; if(!busy&&s.configured.github) say('');
-    }).catch(function(e){ say(e.message,true); });
+    }).catch(function(e){ var f=friendly(e,'loading your requests'); banner('err',f[0],f[1]); });
   }
+  // Asking for the same thing again usually means it looked like it didn't work; say where it stands instead.
+  function earlier(text){
+    var norm=function(t){return String(t).toLowerCase().replace(/[^a-z0-9]+/g,' ').trim()};
+    var n=norm(text);
+    for(var i=lastHistory.length-1;i>=0;i--){ if(norm(lastHistory[i].request)===n) return lastHistory[i]; }
+    return null;
+  }
+  var WHERE={queued:'is still being made',draft:'is ready: press Preview to see it',published:'was published',reply:'was answered (see the reply above)',discarded:'was discarded'};
   // Preview: load the draft into the review frame in place of the live page.
   function prep(html){
     var base=location.href.replace(/[#?].*$/,'').replace(/[^/]*$/,'');
@@ -254,41 +311,53 @@ body.ed-open main,body.ed-open header{margin-left:380px}
       if(!r.html){ say('Nothing to preview.'); return; }
       window.__draftHtml=prep(r.html); previewBtn.setAttribute('aria-pressed','true'); previewBtn.textContent='Back to live site';
       if(window.MOHI) window.MOHI.render();
-    }).catch(function(e){ say(e.message,true); });
+    }).catch(function(e){ var f=friendly(e,'loading the preview'); banner('err',f[0],f[1]); });
   }
   previewBtn.onclick=function(){ showPreview(!window.__draftHtml); };
   // GitHub Pages takes a minute or more to rebuild after a publish. Until the live file matches what was
   // published, keep showing the published version, or it looks as if the changes were thrown away.
-  function waitForLive(html,tries){
+  function waitForLive(html,tries,at){
     fetch('index.html?review=1',{cache:'reload'}).then(function(r){return r.text()}).catch(function(){return ''}).then(function(t){
-      if(t===html||tries>=40){
+      if(t===html){
         window.__published=null; window.__draftHtml=null; if(window.MOHI) window.MOHI.render();
-        say(t===html?'Published. This is the live site now.':'');
-      } else setTimeout(function(){ waitForLive(html,tries+1); },15000);
+        banner('ok','Live now ('+clock()+')','Guests see your changes. If a phone or another tab still shows the old version, close it and open the site again.');
+      } else if(tries>=40){
+        window.__published=null; window.__draftHtml=null; if(window.MOHI) window.MOHI.render();
+        banner('err','Published, but the site hasn\'t updated yet','Your changes were saved at '+at+', but after 10 minutes the live site still shows the old version. Don\'t publish again. Tell Christa, and she\'ll check GitHub.');
+      } else setTimeout(function(){ waitForLive(html,tries+1,at); },15000);
     });
   }
+  var publishing=false;
   $('ed-publish').onclick=function(){
+    if(publishing) return;
     if(!confirm('Publish these changes? Guests will see them on the live site in a few minutes.')) return;
-    say('Publishing…');
+    publishing=true; $('ed-publish').disabled=true; $('ed-discard').disabled=true;
+    banner('info','Publishing…','Please wait. Don\'t press Publish again.');
     var published;
     call('draft_html').then(function(r){ published=r.html; return call('publish'); }).then(function(){
-      say('Published. The live site is updating; this usually takes 1–3 minutes.');
+      var at=clock();
+      banner('info','Published at '+at+'. The site is updating.','This usually takes 1–3 minutes. The preview shows the new version until then, and this message will say when it\'s live. No need to press Publish again.');
       if(published){
         window.__published=published; window.__draftHtml=prep(published);
         previewBtn.setAttribute('aria-pressed','false'); previewBtn.textContent='Preview';
         if(window.MOHI) window.MOHI.render();
-        waitForLive(published,0);
+        waitForLive(published,0,at);
       } else showPreview(false);
       refresh();
-    }).catch(function(e){ say(e.message,true); });
+    }).catch(function(e){ var f=friendly(e,'publishing'); banner('err',f[0],f[1]); })
+      .then(function(){ publishing=false; $('ed-publish').disabled=false; $('ed-discard').disabled=false; });
   };
   $('ed-discard').onclick=function(){
     if(!confirm('Discard all unpublished changes?')) return;
-    call('discard').then(function(){ say('Discarded. The live site is unchanged.'); refresh(); }).catch(function(e){ say(e.message,true); });
+    call('discard').then(function(){ banner('info','Discarded','Those changes were thrown away. The live site is unchanged.'); refresh(); })
+      .catch(function(e){ var f=friendly(e,'discarding'); banner('err',f[0],f[1]); });
   };
   form.onsubmit=function(e){
     e.preventDefault(); var text=msg.value.trim(); if(!text||busy) return;
-    busy=true; send.disabled=true; say('Saving…');
+    var same=earlier(text);
+    if(same&&same.status!=='discarded'&&!confirm('You already asked for this on '+when(same.created_at)+', and it '+(WHERE[same.status]||'was received')+'.'
+      +(same.status==='published'?' If the site still looks old, close it and open it again.':'')+'\n\nSend it again anyway?')) return;
+    busy=true; send.disabled=true; say('Saving…'); banner(null);
     log.insertAdjacentHTML('beforeend','<div class="ed-msg me"><b>You · now</b><p>'+esc(text)+'</p></div>'); log.scrollTop=log.scrollHeight;
     var author=''; try{ author=localStorage.getItem('mohi-review-name')||''; }catch(e2){}
     call('propose',{message:text,author:author||'Jules'}).then(function(r){
@@ -298,7 +367,7 @@ body.ed-open main,body.ed-open header{margin-left:380px}
         if(r.status==='draft'){ say('Here is the preview.'); return showPreview(true); }
         say('');
       });
-    }).catch(function(err){ busy=false; send.disabled=false; say(err.message,true); });
+    }).catch(function(err){ busy=false; send.disabled=false; say(''); var f=friendly(err,'sending your request'); banner('err',f[0],f[1]+' Your text is still in the box.'); });
   };
   msg.addEventListener('keydown',function(e){ if(e.key==='Enter'&&(e.metaKey||e.ctrlKey)) form.requestSubmit(); });
   function open(on){
