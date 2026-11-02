@@ -90,14 +90,14 @@
   section { padding: 96px 24px; scroll-margin-top: 58px; }
   .wrap { max-width: 980px; margin: 0 auto; }
   .narrow { max-width: 680px; margin: 0 auto; }
-  h2 { font: 400 34px/1.1 "mrs-eaves-roman-all-petite-c", serif; letter-spacing: .16em; text-align: center; margin: 0 0 6px; color: var(--navy); }
+  h2 { font: 400 clamp(31px, 4.4vw, 42px)/1.1 "mrs-eaves-roman-all-petite-c", serif; letter-spacing: .16em; text-align: center; margin: 0 0 6px; color: var(--navy); }
   .kicker { text-align: center; font-style: italic; color: var(--soft); margin: 0 0 40px; }
   .orn { display: block; margin: 0 auto 18px; width: 64px; color: var(--navy); opacity: .85; }
   .frame { background: var(--white); outline: 1.5px solid var(--ink); outline-offset: -9px; box-shadow: inset 0 0 0 13px var(--white), inset 0 0 0 14.5px var(--ink); }
 
   /* hero */
   .hero { padding-top: 64px; padding-bottom: 28px; text-align: center; }
-  .hero .names { font: 400 clamp(45px, 7vw, 83px)/1.02 "mrs-eaves-roman-all-petite-c", serif; letter-spacing: .1em; margin: 18px 0 10px; color: var(--navy); }
+  .hero .names { font: 400 clamp(40px, 9vw, 88px)/1.02 "mrs-eaves-roman-all-petite-c", serif; letter-spacing: .1em; margin: 18px 0 10px; color: var(--navy); }
   .hero .names .amp { font: italic 400 .86em/0 "mrs-eaves", Georgia, serif; letter-spacing: 0; vertical-align: -.02em; margin: 0 .14em; color: var(--ink); }
   .hero .when { font: 400 clamp(19px, 2.6vw, 27px)/1.4 "mrs-eaves-roman-all-petite-c", serif; letter-spacing: .22em; margin: 0 0 34px; }
   .hero-grid { display: grid; grid-template-columns: 1.05fr 1fr; gap: 56px; align-items: center; text-align: left; max-width: 980px; margin: 0 auto; }
@@ -139,11 +139,11 @@
   /* weekend */
   .days { display: grid; gap: 28px; }
   .day { padding: 40px 44px 30px; }
-  .day h3 { font: 400 22px/1.2 "mrs-eaves-roman-all-petite-c", serif; letter-spacing: .2em; margin: 0 0 22px; text-align: center; color: var(--navy); }
+  .day h3 { font: 400 clamp(20px, 2.6vw, 25px)/1.2 "mrs-eaves-roman-all-petite-c", serif; letter-spacing: .2em; margin: 0 0 22px; text-align: center; color: var(--navy); }
   .ev { display: grid; grid-template-columns: 170px 1fr; gap: 6px 28px; padding: 18px 0; border-top: 1px solid var(--rule); }
   .ev:first-of-type { border-top: 0; }
   .ev .t { font: 400 19px/1.3 "mrs-eaves-roman-all-petite-c", serif; letter-spacing: .12em; color: var(--navy); }
-  .ev h4 { font: 400 22px/1.2 "mrs-eaves", serif; margin: 0 0 2px; color: var(--navy); }
+  .ev h4 { font: 400 26px/1.2 "mrs-eaves", serif; margin: 0 0 2px; color: var(--navy); }
   .ev p { margin: 0; }
   .ev .meta { color: var(--soft); font-style: italic; }
   .ev .cal { font: 400 15px/1 "mrs-eaves-roman-all-petite-c", serif; letter-spacing: .14em; margin-top: 8px; display: inline-block; }
@@ -154,7 +154,7 @@
   .hotel.wide > p { margin: 0; }
   .hotel { padding: 34px 28px 28px; }
   .hotel .tag { font: 400 17px/1 "mrs-eaves-roman-all-petite-c", serif; letter-spacing: .2em; color: var(--soft); }
-  .hotel h3 { font: 400 29px/1.15 "mrs-eaves-roman-all-petite-c", serif; letter-spacing: .1em; margin: 8px 0 4px; color: var(--navy); }
+  .hotel h3 { font: 400 clamp(24px, 2.8vw, 28px)/1.15 "mrs-eaves-roman-all-petite-c", serif; letter-spacing: .1em; margin: 8px 0 4px; color: var(--navy); }
   .hotel .where { font-style: italic; color: var(--soft); margin: 0 0 18px; }
   .rates { list-style: none; padding: 0; margin: 0 0 18px; }
   .rates li { display: flex; justify-content: space-between; gap: 12px; padding: 7px 0; border-bottom: 1px dotted var(--rule); }
@@ -166,7 +166,7 @@
   .more { display: grid; grid-template-columns: 1fr; gap: 28px; max-width: 520px; margin: 52px auto 0; }
   .more-card { padding: 34px 32px 30px; text-align: center; }
   .more-card .doodle { width: 74px; display: block; margin: 0 auto 10px; }
-  .more-card h3 { font: 400 25px/1.2 "mrs-eaves-roman-all-petite-c", serif; letter-spacing: .12em; margin: 0 0 6px; color: var(--navy); }
+  .more-card h3 { font: 400 clamp(23px, 2.8vw, 27px)/1.2 "mrs-eaves-roman-all-petite-c", serif; letter-spacing: .12em; margin: 0 0 6px; color: var(--navy); }
   .more-card p { margin: 0 0 14px; }
   .soon { font-style: italic; color: var(--soft); }
   .getting { display: grid; grid-template-columns: repeat(3, 1fr); gap: 28px; margin-top: 46px; }
@@ -215,8 +215,15 @@
   footer svg { width: 92px; height: 92px; }
   footer p { font: 400 16px/1.6 "mrs-eaves-roman-all-petite-c", serif; letter-spacing: .2em; color: var(--soft); margin: 12px 0 0; }
 
+  .hero .when i { font-style: normal; }
+  @media (max-width: 560px) {
+    .hero .when { font-size: 17px; letter-spacing: .18em; }
+    .hero .when span { display: block; } .hero .when i { display: none; }
+  }
   @media (max-width: 820px) {
     section { padding: 72px 18px; }
+    body { font-size: 19px; }
+    .ev h4 { font-size: 24px; }
     .hero-grid, .hotels, .getting, .more { grid-template-columns: 1fr; gap: 32px; }
     .knot { width: 150px; } .doodle { width: 64px; } .tile { width: 200px; }
     .knot b { font-size: 36px; } .knot span { font-size: 13px; letter-spacing: .14em; }
@@ -368,7 +375,7 @@
   <!-- HOME -->
   <section id="home" class="hero">
     <h1 class="names">Julia <span class="amp">&amp;</span> Aidan</h1>
-    <p class="when">Sunday, August 1, 2027 · Chatham Bars Inn · Cape Cod</p>
+    <p class="when"><span>Sunday, August 1, 2027</span><i> · </i><span>Chatham Bars Inn · Cape Cod</span></p>
     <div class="photo frame home-photo"><img src="hero.jpg" alt="Julia and Aidan walking beneath the Washington Square Arch"></div>
     <div class="knot-row">
       <figure class="knot" aria-live="polite">
