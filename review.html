@@ -181,6 +181,7 @@ body.ed-open main,body.ed-open header{margin-left:380px}
     }
     ifr.title=NAMES[page]+' · '+view+(draft?' · draft preview':'');
     if(!window.__rvHasKey){ note.className='note warn'; note.textContent='Open this page from the review link Christa sent you to see and leave comments.'; }
+    else if(draft&&window.__published){ note.className='note draft'; note.textContent='Published. You\'re seeing the new version; the live site catches up in 1–3 minutes, then this switches to it.'; }
     else if(draft){ note.className='note draft'; note.textContent='Previewing your unpublished changes. Guests still see the live site until you publish.'; }
     else { note.className='note'; note.textContent=NAMES[page]+' · '+(view==='desktop'?'1440 px desktop, scaled to fit.':'390 px phone.')+' Scroll inside the frame. Click Comment, then click anywhere on the page to leave a note, or use Comments → Comment on the whole page.'+(page==='Portal'?' The portal needs your admin key to show data.':''); }
     fit();
@@ -228,7 +229,7 @@ body.ed-open main,body.ed-open header{margin-left:380px}
   function setDraft(d){
     hasDraft=!!d; draftBox.hidden=!d; $('ed-dot').hidden=!d;
     if(d) $('ed-draft-note').textContent='Started '+when(d.created_at)+'.';
-    if(!d) showPreview(false);
+    if(!d&&!window.__published) showPreview(false);
   }
   var pollTimer=null;
   function refresh(){
@@ -256,13 +257,29 @@ body.ed-open main,body.ed-open header{margin-left:380px}
     }).catch(function(e){ say(e.message,true); });
   }
   previewBtn.onclick=function(){ showPreview(!window.__draftHtml); };
+  // GitHub Pages takes a minute or more to rebuild after a publish. Until the live file matches what was
+  // published, keep showing the published version, or it looks as if the changes were thrown away.
+  function waitForLive(html,tries){
+    fetch('index.html?review=1',{cache:'reload'}).then(function(r){return r.text()}).catch(function(){return ''}).then(function(t){
+      if(t===html||tries>=40){
+        window.__published=null; window.__draftHtml=null; if(window.MOHI) window.MOHI.render();
+        say(t===html?'Published. This is the live site now.':'');
+      } else setTimeout(function(){ waitForLive(html,tries+1); },15000);
+    });
+  }
   $('ed-publish').onclick=function(){
-    if(!confirm('Publish these changes? Guests will see them on the live site in about a minute.')) return;
+    if(!confirm('Publish these changes? Guests will see them on the live site in a few minutes.')) return;
     say('Publishing…');
-    call('publish').then(function(){
-      say('Published. The live site updates in about a minute.');
-      showPreview(false); refresh();
-      setTimeout(function(){ var f=$('view'); if(!window.__draftHtml&&f.src) f.src=f.src.split('#')[0]+'&t='+Date.now()+'#'+(f.src.split('#')[1]||''); },70000);
+    var published;
+    call('draft_html').then(function(r){ published=r.html; return call('publish'); }).then(function(){
+      say('Published. The live site is updating; this usually takes 1–3 minutes.');
+      if(published){
+        window.__published=published; window.__draftHtml=prep(published);
+        previewBtn.setAttribute('aria-pressed','false'); previewBtn.textContent='Preview';
+        if(window.MOHI) window.MOHI.render();
+        waitForLive(published,0);
+      } else showPreview(false);
+      refresh();
     }).catch(function(e){ say(e.message,true); });
   };
   $('ed-discard').onclick=function(){
