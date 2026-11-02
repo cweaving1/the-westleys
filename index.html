@@ -129,7 +129,7 @@
   .btn[disabled] { opacity: .5; cursor: default; }
 
   /* home */
-  .home-photo { max-width: 860px; margin: 8px auto 0; }
+  .home-photo { max-width: 760px; margin: 8px auto 0; }
   .home-photo img { aspect-ratio: 3 / 2; object-fit: cover; object-position: 50% 40%; }
   .knot-row { display: flex; align-items: center; justify-content: center; gap: clamp(16px, 5vw, 64px); margin: 48px auto 8px; }
   .knot { position: relative; width: 190px; margin: 0; color: var(--navy); }
@@ -152,7 +152,13 @@
   /* gallery: in color, unlike the black-and-white photos elsewhere */
   .gallery { columns: 3 260px; column-gap: 24px; margin-top: 40px; }
   .gallery .photo { break-inside: avoid; margin: 0 0 24px; padding: 22px; }
-  .gallery .photo img { filter: none; }
+  .gallery .photo img { filter: none; cursor: zoom-in; }
+  /* gallery photo enlarged: tap anywhere or press Esc to close */
+  .lightbox { border: 0; padding: 0; background: transparent; max-width: 94vw; max-height: 94vh; overflow: visible; cursor: zoom-out; }
+  .lightbox::backdrop { background: rgba(247,245,239,.94); }
+  .lightbox .photo { padding: 22px; }
+  .lightbox img { max-width: calc(94vw - 44px); max-height: calc(94vh - 44px); width: auto; filter: none; }
+  .lightbox[open] { animation: pagein .4s ease both; }
   @media (prefers-reduced-motion: reduce) { .track { animation: none; } .banner { overflow-x: auto; } }
 
   /* weekend */
@@ -395,7 +401,7 @@
   <section id="home" class="hero">
     <h1 class="names">Julia <span class="amp">&amp;</span> Aidan</h1>
     <p class="when"><span>Sunday, August 1, 2027</span><i> · </i><span>Chatham Bars Inn · Cape Cod</span></p>
-    <div class="photo frame home-photo"><img src="photos/uploads/20261102022538-2z9a7378-026de1.jpg" alt="Julia and Aidan walking arm in arm beneath the Washington Square Arch" style="object-position: 50% 50%"></div>
+    <div class="photo frame home-photo"><img src="photos/uploads/20261102025459-2z9a7366-216c35.jpg" alt="Julia and Aidan walking arm in arm across the street beneath the Washington Square Arch" style="object-position: 50% 32%"></div>
     <div class="knot-row">
       <figure class="knot" aria-live="polite">
         <svg viewBox="0 0 200 240" aria-hidden="true" id="knotArt"></svg>
@@ -487,7 +493,7 @@
               <li><span>Mansion Deluxe Guestroom</span><b>$999</b></li>
             </ul>
             <p class="fine">Per night.</p>
-            <p class="fine" data-todo="ocean-edge-link">Online booking link and password: coming soon.</p>
+            <p class="fine"><a href="https://book.onagilysys.com/wbe/group/2353/OceanEdge/auth" target="_blank" rel="noopener">Book online</a> and sign in with Group ID <b>926</b> and password <b>Westley2027</b>.</p>
             <p class="fine">A beach bar, and the Brewster flats right outside, where you can walk out for miles at low tide.</p>
           </details>
         </div>
@@ -573,10 +579,9 @@
     </div>
     <div class="wrap"><div class="notes" id="notes"></div></div>
   </section>
-  <div class="banner" id="banner" aria-label="Photos of Julia and Aidan">
-    <div class="track" id="track"></div>
-  </div>
 </main>
+
+<dialog class="lightbox" id="lightbox" aria-label="Enlarged photo"><div class="photo frame"><img id="lightboxImg" src="" alt=""></div></dialog>
 
 <footer>
   <svg viewBox="0 0 400 400" style="color:var(--navy)" aria-hidden="true"><use href="#emblem"/></svg>
@@ -735,13 +740,16 @@ const BANNER = [
   { src: 'photos/swimriviera.jpg', alt: "Julia and Aidan swimming on the Riviera" },
   { src: 'photos/countryside.jpg', alt: "Julia and Aidan walking through the dunes" }
 ];
-(function banner() {
-  const tiles = BANNER.length
-    ? BANNER.map(b => `<div class="tile"><img src="${esc(b.src)}" alt="${esc(b.alt || '')}" loading="lazy"></div>`)
-    : Array.from({ length: 8 }, () => `<div class="tile todo"><div>Photo to come</div></div>`);
-  // two copies side by side so the drift loops without a seam
-  document.getElementById('track').innerHTML = tiles.join('') + tiles.join('').replace(/<div class="tile/g, '<div aria-hidden="true" class="tile');
-})();
+
+// ---------- gallery: click a photo to see it bigger ----------
+const lightbox = document.getElementById('lightbox'), lightboxImg = document.getElementById('lightboxImg');
+document.querySelector('.gallery').addEventListener('click', e => {
+  const img = e.target.closest('img');
+  if (!img) return;
+  lightboxImg.src = img.src; lightboxImg.alt = img.alt;
+  lightbox.showModal();
+});
+lightbox.addEventListener('click', () => lightbox.close());
 
 // ---------- add to calendar ----------
 document.querySelectorAll('[data-ics]').forEach(a => a.addEventListener('click', e => {
