@@ -445,9 +445,10 @@
       <div class="days">
         <div class="day frame">
           <h3>Saturday, July 31</h3>
+          <p class="kicker" style="margin:-12px 0 22px">Attire: Cape Cod cocktail</p>
           <div class="ev"><div class="t">Time to come</div><div><h4>Welcome Clambake</h4>
             <p>The Westley Home<br>26 Bluefish Lane, Brewster, Massachusetts</p>
-            <p class="meta">Attire: Cape Cod cocktail · Details to come</p></div></div>
+            <p class="meta">Details to come</p></div></div>
         </div>
         <div class="day frame">
           <h3>Sunday, August 1<br>Wedding Day</h3>
@@ -527,8 +528,10 @@
     <div class="narrow">
       <svg class="orn" viewBox="0 0 240 64" aria-hidden="true"><use href="#fish"/></svg>
       <h2>RSVP</h2>
-      <p class="kicker">Kindly reply by February 1, 2027</p>
-      <div class="rsvp-box frame" id="rsvpBox">
+      <p class="kicker">Coming soon</p>
+      <!-- RSVPs aren't open yet. To open them: remove "hidden" below and set the line above back to
+           "Kindly reply by February 1, 2027". -->
+      <div class="rsvp-box frame" id="rsvpBox" hidden>
         <form id="findForm">
           <div class="field">
             <label for="who">Find your invitation by last name</label>
@@ -639,32 +642,38 @@ document.getElementById('gateForm').addEventListener('submit', e => {
   }
 });
 
-// ---------- entrance: a stacked school of three crosses the gate once ----------
+// ---------- entrance: a school of five, large to small, crosses the gate once ----------
 // enter() can run before this line on a return visit, so read the setting here rather than from CALM
 function swim() {
   if (matchMedia('(prefers-reduced-motion: reduce)').matches) return;
   const school = document.getElementById('school');
-  const W = Math.round(Math.min(280, Math.max(170, innerWidth * 0.2)));  // fish width
-  const gap = W * 0.32, baseY = innerHeight * 0.5 - W * 0.133;
+  const W = Math.round(Math.min(280, Math.max(170, innerWidth * 0.2)));  // the largest fish's width
+  const midY = innerHeight * 0.5;
   const ease = 'cubic-bezier(.45,.05,.3,1)';
   const dur = innerWidth < 700 ? 4200 : 5200;
-  // formation from the pinned drawing: three stacked, the middle one leading slightly
-  [{ dy: -gap, lead: 0 }, { dy: 0, lead: W * 0.22 }, { dy: gap, lead: W * 0.06 }].forEach((f, i) => {
+  // s = size, dy = height above/below the middle, lead = how far ahead, in units of W; spaced so none overlap.
+  // The big one leads in the middle; smaller ones flank it and start a beat apart.
+  [{ s: 1, dy: 0, lead: .22, wait: 0 }, { s: .78, dy: -.36, lead: .02, wait: 120 }, { s: .62, dy: .34, lead: .1, wait: 260 },
+   { s: .48, dy: -.66, lead: -.18, wait: 380 }, { s: .55, dy: .62, lead: -.12, wait: 200 }].forEach((f, i) => {
+    const w = W * f.s;
     const el = document.createElement('div');
     el.className = 'sardine';
-    el.style.width = W + 'px';
+    el.style.width = w + 'px';
     // drawing faces left; mirror it so the school swims left to right
     el.innerHTML = `<svg viewBox="0 0 240 64" style="transform:scaleX(-1)">${document.getElementById('fish').innerHTML}</svg>`;
-    el.querySelectorAll('.tail, .body').forEach(g => g.style.animationDelay = (-i * 0.45) + 's');
+    el.querySelectorAll('.tail, .body').forEach(g => {
+      g.style.animationDelay = (-i * 0.45) + 's';
+      g.style.animationDuration = (1.9 * (0.6 + 0.4 * f.s)) + 's';   // small fish beat their tails faster
+    });
     school.appendChild(el);
-    const x0 = -W * 1.5 + f.lead, x1 = innerWidth + W * 0.3 + f.lead, y = baseY + f.dy;
+    const x0 = -W * 1.5 + f.lead * W, x1 = innerWidth + W * 0.3 + f.lead * W, y = midY + f.dy * W - w * 0.133;
     el.animate([
       { transform: `translate(${x0}px, ${y + 8}px) rotate(.6deg)`, opacity: 0 },
       { transform: `translate(${x0 + (x1 - x0) * .18}px, ${y - 4}px) rotate(-.8deg)`, opacity: .9, offset: .16 },
       { transform: `translate(${x0 + (x1 - x0) * .5}px, ${y + 6}px) rotate(.5deg)`, opacity: .9, offset: .5 },
       { transform: `translate(${x0 + (x1 - x0) * .82}px, ${y - 6}px) rotate(-.6deg)`, opacity: .85, offset: .84 },
       { transform: `translate(${x1}px, ${y - 2}px) rotate(0deg)`, opacity: 0 },
-    ], { duration: dur, delay: 300 + i * 140, easing: ease, fill: 'both' }).finished.then(() => el.remove());
+    ], { duration: dur, delay: 300 + f.wait, easing: ease, fill: 'both' }).finished.then(() => el.remove());
   });
 }
 
