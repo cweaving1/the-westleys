@@ -79,9 +79,11 @@
   /* Entrance: after the password, the emblem lifts away and the school crosses the empty gate as the site fades in. */
   .school { position: fixed; inset: 0; z-index: 60; pointer-events: none; overflow: hidden; }
   .sardine { position: absolute; left: 0; top: 0; color: var(--navy); will-change: transform, opacity; }
-  .sardine svg { display: block; width: 100%; height: auto; overflow: visible; }
-  .sardine .tail { transform-box: fill-box; transform-origin: 0% 50%; animation: tail 1.9s ease-in-out infinite; }
-  .sardine .body { transform-box: fill-box; transform-origin: 30% 50%; animation: sway 1.9s ease-in-out infinite; }
+  /* the engraved fish (same drawing as the ornaments), cut at the tail joint (19.4% from the tail) so the tail can beat */
+  .sardine { aspect-ratio: 480 / 132; }
+  .sardine i { position: absolute; inset: 0; background: url("art/fish-engraved.png") 0 0 / 100% 100% no-repeat; }
+  .sardine .tail { clip-path: inset(0 80% 0 0); transform-origin: 19.4% 54.9%; animation: tail 1.9s ease-in-out infinite; }
+  .sardine .body { clip-path: inset(0 0 0 19.4%); transform-origin: 30% 55%; animation: sway 1.9s ease-in-out infinite; }
   @keyframes tail { 0%,100% { transform: rotate(-5deg) } 50% { transform: rotate(5deg) } }
   @keyframes sway { 0%,100% { transform: skewY(-.8deg) } 50% { transform: skewY(.8deg) } }
   /* Section ornaments: a sardine slides a few pixels in the way it faces as the section arrives. */
@@ -679,8 +681,7 @@ function swim() {
     const el = document.createElement('div');
     el.className = 'sardine';
     el.style.width = w + 'px';
-    // drawing faces left; mirror it so the school swims left to right
-    el.innerHTML = `<svg viewBox="0 0 240 64" style="transform:scaleX(-1)">${document.getElementById('fish').innerHTML}</svg>`;
+    el.innerHTML = '<i class="tail"></i><i class="body"></i>';   // engraved fish already faces right, the way the school swims
     el.querySelectorAll('.tail, .body').forEach(g => {
       g.style.animationDelay = (-i * 0.45) + 's';
       g.style.animationDuration = (1.9 * (0.6 + 0.4 * f.s)) + 's';   // small fish beat their tails faster
