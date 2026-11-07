@@ -43,7 +43,12 @@
   .script { font: 400 1.6em/0 "Pinyon Script", cursive; letter-spacing: 0; }
 
   /* faint sailboat plan behind everything */
-  .plan { position: fixed; inset: 0; z-index: 0; pointer-events: none; opacity: .07; display: flex; align-items: center; justify-content: flex-end; }
+  /* Background: real 1835-1898 public-domain yacht plans (sources in vintage-plans/SOURCES.md), one fixed arrangement
+     scaled to fit the window, so every drawing is always whole; the page scrolls over it. */
+  .plan { position: fixed; inset: 64px 0 0; z-index: 0; pointer-events: none; background: url("art/plans-desktop.jpg") center / contain no-repeat; }   /* starts below the menu bar */
+  .plan svg { display: none; }
+  @media (max-aspect-ratio: 1/1) { .plan { background-image: url("art/plans-tablet.jpg"); } }
+  @media (max-aspect-ratio: 2/3) { .plan { background-image: url("art/plans-phone.jpg"); } }
   .plan svg { width: min(900px, 120vw); height: auto; transform: translateX(18%); }
   main, header.site, footer, nav.bar { position: relative; z-index: 1; }
   /* Each tab is its own page; only the active one shows. */
@@ -96,6 +101,7 @@
   nav.bar { position: sticky; top: 0; z-index: 20; background: rgba(247,245,239,.94); backdrop-filter: blur(6px); border-bottom: 1px solid var(--rule); }
   nav.bar .in { max-width: 1080px; margin: 0 auto; display: flex; align-items: center; gap: 22px; padding: 12px 24px; overflow-x: auto; scrollbar-width: none; }
   nav.bar .mono { flex: none; width: 34px; height: 34px; }
+  nav.bar .mono.whale { width: auto; height: 30px; }   /* the whale sketch in place of the monogram */
   nav.bar a { font: 400 19px/1 "mrs-eaves-roman-all-petite-c", serif; letter-spacing: .16em; text-decoration: none; color: var(--soft); white-space: nowrap; padding: 6px 0; }
   nav.bar a:hover, nav.bar a.on { color: var(--navy); }
   nav.bar a.rsvp { margin-left: auto; color: var(--white); background: var(--navy); padding: 9px 16px; position: sticky; right: 0; box-shadow: -14px 0 12px rgba(247,245,239,.95); }
@@ -129,8 +135,8 @@
   .btn[disabled] { opacity: .5; cursor: default; }
 
   /* home */
-  .home-photo { max-width: 760px; margin: 8px auto 0; }
-  .home-photo img { aspect-ratio: 3 / 2; object-fit: cover; object-position: 50% 40%; }
+  .home-photo { max-width: 600px; margin: 8px auto 0; }
+  .home-photo img { aspect-ratio: 1 / 1; object-fit: cover; }   /* square crop that leaves out the passer-by */
   .knot-row { display: flex; align-items: center; justify-content: center; gap: clamp(16px, 5vw, 64px); margin: 48px auto 8px; }
   .knot { position: relative; width: 190px; margin: 0; color: var(--navy); }
   .knot svg { display: block; width: 100%; height: auto; overflow: visible; }
@@ -239,6 +245,7 @@
   .band { }
   footer { text-align: center; padding: 64px 24px 80px; }
   footer svg { width: 92px; height: 92px; }
+  footer .whale { display: block; width: 170px; height: auto; margin: 0 auto; }
   footer p { font: 400 16px/1.6 "mrs-eaves-roman-all-petite-c", serif; letter-spacing: .2em; color: var(--soft); margin: 12px 0 0; }
 
   .hero .when i { font-style: normal; }
@@ -385,7 +392,7 @@
 
 <nav class="bar" aria-label="Sections">
   <div class="in">
-    <svg class="mono" viewBox="0 0 400 400" style="color:var(--navy)" aria-hidden="true"><use href="#emblem"/></svg>
+    <img class="mono whale" src="art/whale.png" alt="">
     <a href="#home">Home</a>
     <a href="#weekend">The Weekend</a>
     <a href="#travel">Travel &amp; Stay</a>
@@ -401,7 +408,7 @@
   <section id="home" class="hero">
     <h1 class="names">Julia <span class="amp">&amp;</span> Aidan</h1>
     <p class="when"><span>Sunday, August 1, 2027</span><i> · </i><span>Chatham Bars Inn · Cape Cod</span></p>
-    <div class="photo frame home-photo"><img src="photos/uploads/20261102025459-2z9a7366-216c35.jpg" alt="Julia and Aidan walking arm in arm across the street beneath the Washington Square Arch" style="object-position: 50% 32%"></div>
+    <div class="photo frame home-photo"><img src="photos/uploads/20261107065517-header-square-arch-e6a78d.jpg" alt="Julia and Aidan walking arm in arm across the street beneath the Washington Square Arch" style="object-position: 50% 32%"></div>
     <div class="knot-row">
       <figure class="knot" aria-live="polite">
         <svg viewBox="0 0 200 240" aria-hidden="true" id="knotArt"></svg>
@@ -587,7 +594,7 @@
 <dialog class="lightbox" id="lightbox" aria-label="Enlarged photo"><div class="photo frame"><img id="lightboxImg" src="" alt=""></div></dialog>
 
 <footer>
-  <svg viewBox="0 0 400 400" style="color:var(--navy)" aria-hidden="true"><use href="#emblem"/></svg>
+  <img class="whale" src="art/whale.png" alt="">
   <p>August 1, 2027 · Chatham, Massachusetts</p>
 </footer>
 
