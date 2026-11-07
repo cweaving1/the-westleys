@@ -45,10 +45,10 @@
   /* faint sailboat plan behind everything */
   /* Background: real 1835-1898 public-domain yacht plans (sources in vintage-plans/SOURCES.md), one fixed arrangement
      scaled to fit the window, so every drawing is always whole; the page scrolls over it. */
-  .plan { position: fixed; inset: 64px 0 0; z-index: 0; pointer-events: none; background: url("art/plans-desktop.jpg") center / contain no-repeat; }   /* starts below the menu bar */
+  .plan { position: fixed; inset: 0; z-index: 0; pointer-events: none; background: url("art/plans-desktop-full.jpg") center / cover no-repeat; }   /* full bleed: drawings run to every edge */
   .plan svg { display: none; }
-  @media (max-aspect-ratio: 1/1) { .plan { background-image: url("art/plans-tablet.jpg"); } }
-  @media (max-aspect-ratio: 2/3) { .plan { background-image: url("art/plans-phone.jpg"); } }
+  @media (max-aspect-ratio: 1/1) { .plan { background-image: url("art/plans-tablet-full.jpg"); } }
+  @media (max-aspect-ratio: 2/3) { .plan { background-image: url("art/plans-phone-full.jpg"); } }
   .plan svg { width: min(900px, 120vw); height: auto; transform: translateX(18%); }
   main, header.site, footer, nav.bar { position: relative; z-index: 1; }
   /* Each tab is its own page; only the active one shows. */
