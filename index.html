@@ -116,7 +116,7 @@
   .frame { background: var(--white); outline: 1.5px solid var(--ink); outline-offset: -9px; box-shadow: inset 0 0 0 13px var(--white), inset 0 0 0 14.5px var(--ink); }
 
   /* hero */
-  .hero { padding-top: 64px; padding-bottom: 28px; text-align: center; }
+  .hero { padding-top: 64px; padding-bottom: 12px; text-align: center; }
   .hero .names { font: 400 clamp(40px, 9vw, 88px)/1.02 "mrs-eaves-roman-all-petite-c", serif; letter-spacing: .1em; margin: 18px 0 10px; color: var(--navy); }
   .hero .names .amp { font: italic 400 .86em/0 "mrs-eaves", Georgia, serif; letter-spacing: 0; vertical-align: -.02em; margin: 0 .14em; color: var(--ink); }
   .hero .when { font: 400 clamp(19px, 2.6vw, 27px)/1.4 "mrs-eaves-roman-all-petite-c", serif; letter-spacing: .22em; margin: 0 0 34px; }
@@ -137,10 +137,11 @@
   /* home */
   .home-photo { max-width: 600px; margin: 8px auto 0; }
   .home-photo img { aspect-ratio: 1 / 1; object-fit: cover; }   /* square crop that leaves out the passer-by */
-  .knot-row { display: flex; align-items: center; justify-content: center; gap: clamp(16px, 5vw, 64px); margin: 48px auto 8px; }
+  .knot-row { display: flex; align-items: center; justify-content: center; gap: clamp(16px, 5vw, 64px); margin: 22px auto 0; }
   .knot { position: relative; width: 190px; margin: 0; color: var(--navy); }
   .knot svg { display: block; width: 100%; height: auto; overflow: visible; }
-  .knot figcaption { position: absolute; left: 0; right: 0; top: 41.5%; transform: translateY(-50%); text-align: center; }
+  .knot .rope { display: block; width: 100%; height: auto; }   /* engraved rope ring, same hand as the whale */
+  .knot figcaption { position: absolute; left: 0; right: 0; top: 40.0%; transform: translateY(-50%); text-align: center; }
   .knot b { display: block; font: 400 46px/1 "mrs-eaves", serif; color: var(--navy); }
   .knot span { display: block; margin-top: 4px; font: 400 17px/1 "mrs-eaves-roman-all-petite-c", serif; letter-spacing: .2em; color: var(--soft); }
   .doodle { width: 92px; color: var(--navy); opacity: .9; }
@@ -411,7 +412,7 @@
     <div class="photo frame home-photo"><img src="photos/uploads/20261107065517-header-square-arch-e6a78d.jpg" alt="Julia and Aidan walking arm in arm across the street beneath the Washington Square Arch" style="object-position: 50% 32%"></div>
     <div class="knot-row">
       <figure class="knot" aria-live="polite">
-        <svg viewBox="0 0 200 240" aria-hidden="true" id="knotArt"></svg>
+        <img class="rope" src="art/rope-ring.png" alt="">
         <figcaption><b id="days"></b><span>days to go</span></figcaption>
       </figure>
     </div>
@@ -703,6 +704,7 @@ document.querySelectorAll('.orn, .reveal').forEach(e => (CALM || REVIEW) ? e.cla
 // Rope = an outline (navy, then salt inside) with diagonal lay lines placed along each path.
 (function knot() {
   const svg = document.getElementById('knotArt'), NS = 'http://www.w3.org/2000/svg';
+  if (!svg) return;                                     // the rope is now an engraved image (art/rope-ring.png)
   const paths = [
     'M70.8 172.3 A 78 78 0 1 1 129.2 172.3',                                                         // ring, open at the bottom
     'M70.8 172.3 C 80 186, 98 192, 112 184 C 122 178, 118 166, 108 168 C 98 170, 100 186, 112 198 C 120 206, 125 217, 121 229',
