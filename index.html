@@ -221,9 +221,14 @@
   .eat-group li .name { font-weight: 600; color: var(--navy); }
   .eat-group li p { margin: 2px 0 0; }
   .eat-group .fine { font-size: .9em; color: var(--soft); }
-  .getting { display: grid; grid-template-columns: repeat(2, 1fr); gap: 22px; align-items: start; margin-top: 22px; }
-  .getting .hotel p { margin: 0; }
-  .getting .hotel .where { margin: 0 0 12px; }
+  .getting { margin-top: 64px; }
+  .getting-title { display: flex; align-items: center; gap: 22px; margin: 0 0 30px; font: 400 17px/1 "mrs-eaves-roman-all-petite-c", serif; letter-spacing: .24em; text-transform: uppercase; color: var(--soft); }
+  .getting-title::before, .getting-title::after { content: ""; flex: 1; height: 1px; background: rgba(45,58,82,.28); }
+  .getting-cols { display: grid; grid-template-columns: 1fr 1fr; max-width: 820px; margin: 0 auto; }
+  .getting-cols > div { padding: 2px 36px; }
+  .getting-cols > div + div { border-left: 1px solid rgba(45,58,82,.28); }
+  .getting h4 { font: 400 20px/1.2 "mrs-eaves-roman-all-petite-c", serif; letter-spacing: .16em; margin: 0 0 10px; color: var(--navy); }
+  .getting-cols p { margin: 0; color: var(--ink); }
 
   /* rsvp */
   .rsvp-box { padding: 48px 52px; }
@@ -279,7 +284,10 @@
     section { padding: 72px 18px; }
     body { font-size: 19px; }
     .ev h4 { font-size: 24px; }
-    .hero-grid, .hotels, .getting, .more, .eat-groups { grid-template-columns: 1fr; gap: 32px; }
+    .hero-grid, .hotels, .getting-cols, .more, .eat-groups { grid-template-columns: 1fr; gap: 32px; }
+    .getting-cols { gap: 0; }
+    .getting-cols > div { padding: 0 4px; }
+    .getting-cols > div + div { border-left: 0; border-top: 1px solid rgba(45,58,82,.28); margin-top: 28px; padding-top: 28px; }
     .knot { width: 128px; } .doodle { width: 64px; } .tile { width: 200px; }
     .knot b { font-size: 31px; } .knot span { font-size: 12px; letter-spacing: .12em; }
     .hero-grid { text-align: center; }
@@ -537,18 +545,16 @@
         </div>
       </div>
       <div class="getting">
-        <div class="hotel frame">
-          <span class="tag">Getting here</span>
-          <h3>Flying In</h3>
-          <p class="where">Boston Logan (BOS) · about two hours by car</p>
-          <p>There are also buses from Logan to Hyannis. <a href="https://p-b.com/" target="_blank" rel="noopener">Plymouth &amp; Brockton</a> and <a href="https://peterpanbus.com/" target="_blank" rel="noopener">Peter Pan</a> are a few of the options.</p>
-          <p class="where" style="margin:18px 0 0">Hyannis (HYA) is about half an hour from Chatham.</p>
-        </div>
-        <div class="hotel frame">
-          <span class="tag">Getting here</span>
-          <h3>Driving</h3>
-          <p class="where">Leave extra time</p>
-          <p>Summer traffic over the bridges onto the Cape can be heavy on Fridays.</p>
+        <p class="getting-title"><span>Getting Here</span></p>
+        <div class="getting-cols">
+          <div>
+            <h4>Flying In</h4>
+            <p>Boston Logan (BOS) is about two hours by car. There are also buses from Logan to Hyannis. <a href="https://p-b.com/" target="_blank" rel="noopener">Plymouth &amp; Brockton</a> and <a href="https://peterpanbus.com/" target="_blank" rel="noopener">Peter Pan</a> are a few of the options. Hyannis (HYA) is about half an hour from Chatham.</p>
+          </div>
+          <div>
+            <h4>Driving</h4>
+            <p>Leave extra time. Summer traffic over the bridges onto the Cape can be heavy on Fridays.</p>
+          </div>
         </div>
       </div>
       <div class="more eat-wrap">
