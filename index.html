@@ -213,6 +213,14 @@
   .more-card h3 { font: 400 clamp(23px, 2.8vw, 27px)/1.2 "mrs-eaves-roman-all-petite-c", serif; letter-spacing: .12em; margin: 0 0 6px; color: var(--navy); }
   .more-card p { margin: 0 0 14px; }
   .soon { font-style: italic; color: var(--soft); }
+  .more.eat-wrap { max-width: 860px; }
+  .eat-groups { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px 44px; text-align: left; margin-top: 22px; }
+  .eat-group h4 { font: 400 19px/1.2 "mrs-eaves-roman-all-petite-c", serif; letter-spacing: .16em; margin: 18px 0 10px; padding-bottom: 6px; border-bottom: 1px solid rgba(0,0,0,.15); color: var(--navy); }
+  .eat-group ul { list-style: none; margin: 0; padding: 0; }
+  .eat-group li { margin: 0 0 14px; }
+  .eat-group li a.name { font-weight: 600; color: var(--navy); }
+  .eat-group li p { margin: 2px 0 0; }
+  .eat-group .fine { font-size: .9em; color: var(--soft); }
   .getting { display: grid; grid-template-columns: repeat(3, 1fr); gap: 28px; margin-top: 46px; }
   .getting h4 { font: 400 19px/1.2 "mrs-eaves-roman-all-petite-c", serif; letter-spacing: .16em; margin: 0 0 8px; color: var(--navy); }
   .getting p { margin: 0; }
@@ -271,7 +279,7 @@
     section { padding: 72px 18px; }
     body { font-size: 19px; }
     .ev h4 { font-size: 24px; }
-    .hero-grid, .hotels, .getting, .more { grid-template-columns: 1fr; gap: 32px; }
+    .hero-grid, .hotels, .getting, .more, .eat-groups { grid-template-columns: 1fr; gap: 32px; }
     .knot { width: 128px; } .doodle { width: 64px; } .tile { width: 200px; }
     .knot b { font-size: 31px; } .knot span { font-size: 12px; letter-spacing: .12em; }
     .hero-grid { text-align: center; }
@@ -533,12 +541,35 @@
         <div><h4>Driving</h4><p>Leave extra time. Summer traffic over the bridges onto the Cape can be heavy on Fridays.</p></div>
         <div><h4>Parking</h4><p>Valet parking at Chatham Bars Inn.</p></div>
       </div>
-      <div class="more">
+      <div class="more eat-wrap">
         <div class="more-card frame">
           <svg class="doodle" viewBox="0 0 120 100" aria-hidden="true"><use href="#oyster"/></svg>
           <h3>Where We Like to Eat</h3>
           <p>Our favorite spots on the Cape.</p>
-          <span class="soon" data-todo="restaurants">Recommendations coming soon</span>
+          <div class="eat-groups">
+            <div class="eat-group">
+              <h4>Lunch / Dinner</h4>
+              <ul>
+                <li><a class="name" href="https://sesuit-harbor-cafe.com" target="_blank" rel="noopener">Sesuit Harbor Café</a><p>Jules’ favorite lobster roll! BYOB, and a little insider tip: send someone to the raw bar for oysters while you wait in line.</p></li>
+                <li><a class="name" href="https://bluefinschatham.com" target="_blank" rel="noopener">Bluefin Sushi</a><p>Our favorite sushi spot on the Cape, right in the heart of downtown Chatham!</p></li>
+                <li><a class="name" href="https://pheasantcapecod.com" target="_blank" rel="noopener">The Pheasant</a><p>A cozy, farm-to-table restaurant with a fantastic wine list.</p></li>
+                <li><a class="name" href="https://www.opentable.com/r/leonessa-yarmouth" target="_blank" rel="noopener">Leonessa</a><p>Italian-inspired dining in a charming historic home. Come hungry for the pasta!</p></li>
+                <li><a class="name" href="https://macsseafood.com" target="_blank" rel="noopener">Mac’s Seafood</a><p>Casual spot and something for everyone. Great for a cup of chowdah, fish tacos, lobster rolls and more.</p></li>
+                <li><a class="name" href="https://thebeachcomber.com" target="_blank" rel="noopener">The Beachcomber</a><p>A bit of a trek, but probably the most iconic Cape Cod bar that overlooks the ocean in Wellfleet.</p></li>
+              </ul>
+            </div>
+            <div class="eat-group">
+              <h4>Breakfast</h4>
+              <ul>
+                <li><a class="name" href="https://lighthousekeeperspantry.com" target="_blank" rel="noopener">Lighthouse Keepers</a><p>Our go-to for an iced vanilla latte and delicious baked goods. Get there early!</p></li>
+                <li><a class="name" href="https://toast.app/r/corner-store-orleans/order" target="_blank" rel="noopener">Corner Store</a> <span class="fine">(2 locations: <a href="https://toast.app/r/corner-store-orleans/order" target="_blank" rel="noopener">Orleans</a> · <a href="https://www.google.com/maps/search/?api=1&amp;query=Corner+Store+1403+Old+Queen+Anne+Rd+Chatham+MA" target="_blank" rel="noopener">Chatham</a>)</span><p>Aidan always sniffs out a breakfast burrito wherever he goes - this is his pick on the Cape.</p></li>
+              </ul>
+              <h4>Dessert</h4>
+              <ul>
+                <li><a class="name" href="https://icecreamsmuggler.com" target="_blank" rel="noopener">Ice Cream Smuggler</a><p>Our favorite ice cream spot! Save room after Sesuit. Jules’s pick is Salty Oreo, Aidan’s is Cookie Dough.</p></li>
+              </ul>
+            </div>
+          </div>
         </div>
       </div>
     </div>
