@@ -221,10 +221,9 @@
   .eat-group li .name { font-weight: 600; color: var(--navy); }
   .eat-group li p { margin: 2px 0 0; }
   .eat-group .fine { font-size: .9em; color: var(--soft); }
-  .getting { display: grid; grid-template-columns: repeat(2, 1fr); gap: 28px; margin-top: 46px; }
-  .getting h4 { font: 400 19px/1.2 "mrs-eaves-roman-all-petite-c", serif; letter-spacing: .16em; margin: 0 0 8px; color: var(--navy); }
-  .getting p { margin: 0; }
-  .getting p + p { margin-top: 8px; }
+  .getting { display: grid; grid-template-columns: repeat(2, 1fr); gap: 22px; align-items: start; margin-top: 22px; }
+  .getting .hotel p { margin: 0; }
+  .getting .hotel .where { margin: 0 0 12px; }
 
   /* rsvp */
   .rsvp-box { padding: 48px 52px; }
@@ -538,8 +537,19 @@
         </div>
       </div>
       <div class="getting">
-        <div><h4>Flying in</h4><p>Boston Logan (BOS) is about two hours by car. There are also buses from Logan to Hyannis. <a href="https://p-b.com/" target="_blank" rel="noopener">Plymouth &amp; Brockton</a> and <a href="https://peterpanbus.com/" target="_blank" rel="noopener">Peter Pan</a> are a few of the options. Hyannis (HYA) is about half an hour from Chatham.</p></div>
-        <div><h4>Driving</h4><p>Leave extra time. Summer traffic over the bridges onto the Cape can be heavy on Fridays.</p></div>
+        <div class="hotel frame">
+          <span class="tag">Getting here</span>
+          <h3>Flying In</h3>
+          <p class="where">Boston Logan (BOS) · about two hours by car</p>
+          <p>There are also buses from Logan to Hyannis. <a href="https://p-b.com/" target="_blank" rel="noopener">Plymouth &amp; Brockton</a> and <a href="https://peterpanbus.com/" target="_blank" rel="noopener">Peter Pan</a> are a few of the options.</p>
+          <p class="where" style="margin:18px 0 0">Hyannis (HYA) is about half an hour from Chatham.</p>
+        </div>
+        <div class="hotel frame">
+          <span class="tag">Getting here</span>
+          <h3>Driving</h3>
+          <p class="where">Leave extra time</p>
+          <p>Summer traffic over the bridges onto the Cape can be heavy on Fridays.</p>
+        </div>
       </div>
       <div class="more eat-wrap">
         <div class="more-card frame">
